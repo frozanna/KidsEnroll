@@ -1,6 +1,6 @@
-# AI Rules for {{project-name}}
+# AI Rules for KidsEnroll
 
-{{project-description}}
+EnrollKids is a web application designed to streamline the process of managing extracurricular activities in preschools/kindergartens. The MVP version focuses on delivering key functionalities that address the basic problems faced by facility administrators and parents. The application offers two main panels: an administrator panel for managing the class offer, caregivers/instructors, and users, and a parent panel that allows for easy browsing of the offer and enrolling children in selected activities. The goal is to replace inefficient, manual methods (such as paper lists or email communication) with a single, centralized digital tool
 
 ## Tech Stack
 
