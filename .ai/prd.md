@@ -194,4 +194,3 @@ Sukces wdrożenia wersji MVP będzie mierzony na podstawie danych zbieranych w c
 4. Gotowość operacyjna: Do systemu dodany i przypisany do zajęć jest co najmniej 1 opiekun.
 ### Sposób pomiaru
 Na etapie MVP, ze względu na brak wbudowanych narzędzi analitycznych, metryki będą pozyskiwane ręcznie przez zespół deweloperski poprzez bezpośrednie zapytania do bazy danych. Raport z powyższych wskaźników będzie przygotowywany na koniec każdego miesiąca.
-
