@@ -37,6 +37,34 @@
   - 401 Unauthorized: Invalid or expired token
   - 404 Not Found: Profile not found
 
+#### Create User Profile
+- **Method:** POST
+- **Path:** `/api/profile`
+- **Description:** Create profile for newly registered user (onboarding step)
+- **Authentication:** Required (Parent role)
+- **Request Body:**
+```json
+{
+  "first_name": "John",
+  "last_name": "Doe"
+}
+```
+- **Success Response (201 Created):**
+```json
+{
+  "id": "uuid-string",
+  "email": "user@example.com",
+  "first_name": "John",
+  "last_name": "Doe",
+  "role": "parent",
+  "created_at": "2025-01-15T10:00:00Z"
+}
+```
+- **Error Responses:**
+  - 400 Bad Request: Missing required fields or invalid data format
+  - 401 Unauthorized: Invalid or expired token
+  - 409 Conflict: Profile already exists for this user
+
 #### Update Current User Profile
 - **Method:** PATCH
 - **Path:** `/api/profile`
@@ -675,16 +703,15 @@
 ```json
 {
   "tags": [
-    "art",
-    "creative",
-    "sports",
-    "music",
-    "dance",
-    "science",
-    "language",
-    "technology",
-    "outdoor",
-    "indoor"
+    "zajęcia kreatywne",
+    "sport",
+    "muzyka",
+    "taniec",
+    "nauka",
+    "język obcy",
+    "na świezym powietrzu",
+    "w pomieszczeniu",
+    "indywidualne"
   ]
 }
 ```
@@ -719,6 +746,7 @@ Authorization: Bearer <jwt_token>
 - All `/api/enrollments/*` endpoints
 - GET `/api/reports/costs`
 - GET `/api/profile`
+- POST `/api/profile`
 - PATCH `/api/profile`
 - GET `/api/auth/onboarding-status`
 
