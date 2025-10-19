@@ -1,6 +1,8 @@
 # Dokument wymagań produktu (PRD) - KidsEnroll (MVP)
 ## 1. Przegląd produktu
-KidsEnroll to aplikacja internetowa zaprojektowana w celu usprawnienia procesu zarządzania zajęciami dodatkowymi w przedszkolach. Wersja MVP (Minimum Viable Product) skupia się na dostarczeniu kluczowych funkcjonalności, które rozwiązują podstawowe problemy administratorów placówek oraz rodziców. Aplikacja oferuje dwa główne panele: panel administratora do zarządzania ofertą zajęć, opiekunami i użytkownikami, oraz panel rodzica, który umożliwia łatwe przeglądanie oferty i zapisywanie dzieci na wybrane zajęcia. Celem jest zastąpienie nieefektywnych, manualnych metod (takich jak papierowe listy czy komunikacja mailowa) jednym, scentralizowanym narzędziem cyfrowym.
+KidsEnroll to aplikacja internetowa zaprojektowana w celu usprawnienia procesu zarządzania zajęciami dodatkowymi w przedszkolach. Wersja MVP (Minimum Viable Product) skupia się na dostarczeniu kluczowych funkcjonalności, które rozwiązują podstawowe problemy administratorów placówek oraz rodziców. 
+
+Aplikacja oferuje dwa główne panele: panel administratora do zarządzania ofertą zajęć, opiekunami i użytkownikami, oraz panel rodzica, który umożliwia łatwe przeglądanie oferty i zapisywanie dzieci na wybrane zajęcia. Celem jest zastąpienie nieefektywnych, manualnych metod (takich jak papierowe listy czy komunikacja mailowa) jednym, scentralizowanym narzędziem cyfrowym.
 
 ## 2. Problem użytkownika
 Obecnie proces zarządzania zajęciami dodatkowymi w przedszkolach jest często chaotyczny i czasochłonny.
@@ -23,7 +25,7 @@ KidsEnroll ma na celu rozwiązanie tych problemów poprzez automatyzację i cyfr
 - Zarządzanie kontami rodziców: Przeglądanie listy zarejestrowanych rodziców oraz możliwość ręcznego usuwania ich kont wraz ze wszystkimi powiązanymi danymi.
 - Zarządzanie opiekunami: Dodawanie i zarządzanie listą opiekunów (imię, nazwisko, e-mail kontaktowy).
 - Zarządzanie zajęciami:
-    - Dodawanie nowych zajęć (nazwa, opis, predefiniowane tagi, harmonogram, koszt, limit miejsc).
+    - Dodawanie nowych zajęć (nazwa, opis, predefiniowane tagi, termin, koszt, limit miejsc).
     - Przypisywanie opiekunów do zajęć.
     - Edycja istniejących zajęć (dzień/godzina, opiekun, koszt).
     - Usuwanie zajęć.
@@ -121,7 +123,6 @@ Następujące funkcjonalności celowo NIE wchodzą w zakres wersji MVP i mogą z
     3.  Po wybraniu dziecka przechodzę do ekranu podsumowania z danymi zajęć i dziecka.
     4.  Po potwierdzeniu, dziecko zostaje zapisane na zajęcia, a liczba wolnych miejsc w tych zajęciach zmniejsza się o jeden.
     5.  Zapisane zajęcia pojawiają się w panelu rodzica, w sekcji danego dziecka.
-    6.  Jeśli dziecko nie spełnia kryterium wiekowego (opartego na dacie urodzenia), system wyświetla ostrzeżenie, ale pozwala na kontynuację zapisu.
 
 ---
 - ID: US-007
@@ -160,7 +161,7 @@ Następujące funkcjonalności celowo NIE wchodzą w zakres wersji MVP i mogą z
 - Opis: Jako administrator, chcę móc tworzyć nowe zajęcia dodatkowe, definiując wszystkie ich parametry, aby udostępnić je rodzicom do zapisu.
 - Kryteria akceptacji:
     1.  W panelu administratora jest sekcja "Zajęcia" z opcją "Dodaj nowe zajęcia".
-    2.  Formularz dodawania zajęć zawiera pola: nazwa, opis, koszt, limit miejsc, dzień tygodnia, godzina rozpoczęcia.
+    2.  Formularz dodawania zajęć zawiera pola: nazwa, opis, koszt, limit miejsc, data, godzina rozpoczęcia.
     3.  Mogę przypisać do zajęć jednego z wcześniej zdefiniowanych opiekunów z listy.
     4.  Mogę przypisać do zajęć tagi z predefiniowanej, zamkniętej listy.
     5.  Po zapisaniu, nowe zajęcia pojawiają się na liście zajęć w panelu administratora i stają się widoczne dla rodziców.

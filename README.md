@@ -1,94 +1,88 @@
-# 10x Astro Starter
+# KidsEnroll
 
-A modern, opinionated starter template for building fast, accessible, and AI-friendly web applications.
+## Project Description
+
+KidsEnroll is a web application designed to streamline the management of extracurricular activities in preschools and kindergartens. It features two main panels:
+
+- **Administrator Panel**: Allows management of class offerings, instructors, and user accounts.
+- **Parent Panel**: Enables parents to browse available classes and enroll their children.
+
+This digital solution replaces inefficient manual methods, providing a centralized platform to manage all activity enrollments.
 
 ## Tech Stack
 
-- [Astro](https://astro.build/) v5.5.5 - Modern web framework for building fast, content-focused websites
-- [React](https://react.dev/) v19.0.0 - UI library for building interactive components
-- [TypeScript](https://www.typescriptlang.org/) v5 - Type-safe JavaScript
-- [Tailwind CSS](https://tailwindcss.com/) v4.0.17 - Utility-first CSS framework
+- **Astro 5**: For building fast and efficient web pages with minimal JavaScript.
+- **React 19**: Powers interactive components within the application.
+- **TypeScript 5**: Provides static type checking and enhances development tooling.
+- **Tailwind CSS 4**: Enables rapid and responsive design with utility-first styling.
+- **Shadcn/ui**: Offers a collection of accessible React UI components.
+- **Supabase**: Serves as the backend for authentication and database management.
+- **Openrouter.ai**: Integrates with various AI models for extended functionalities.
 
-## Prerequisites
+## Getting Started Locally
 
-- Node.js v22.14.0 (as specified in `.nvmrc`)
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) version specified in [`.nvmrc`](.nvmrc) (Node **22.14.0**)
 - npm (comes with Node.js)
 
-## Getting Started
+### Installation
 
-1. Clone the repository:
-
-```bash
-git clone https://github.com/przeprogramowani/10x-astro-starter.git
-cd 10x-astro-starter
-```
-
-2. Install dependencies:
-
-```bash
-npm install
-```
-
-3. Run the development server:
-
-```bash
-npm run dev
-```
-
-4. Build for production:
-
-```bash
-npm run build
-```
+1. **Clone the repository**:
+   ```sh
+   git clone https://github.com/frozanna/KidsEnroll.git
+   cd KidsEnroll
+   ```
+2. **Install dependencies**:
+   ```sh
+   npm install
+   ```
+3. **Start the development server**:
+   ```sh
+   npm run dev
+   ```
+4. **Build for production**:
+   ```sh
+   npm run build
+   ```
 
 ## Available Scripts
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
-- `npm run lint:fix` - Fix ESLint issues
+The following npm scripts are available:
 
-## Project Structure
+- **npm run dev**: Starts the Astro development server.
+- **npm run build**: Builds the project for production deployment.
+- **npm run preview**: Previews the production build locally.
+- **npm run astro**: Accesses Astro CLI commands.
+- **npm run lint**: Runs ESLint to analyze code quality.
+- **npm run lint:fix**: Automatically fixes linting issues.
+- **npm run format**: Formats the codebase with Prettier.
 
-```md
-.
-├── src/
-│   ├── layouts/    # Astro layouts
-│   ├── pages/      # Astro pages
-│   │   └── api/    # API endpoints
-│   ├── components/ # UI components (Astro & React)
-│   └── assets/     # Static assets
-├── public/         # Public assets
-```
+## Project Scope
 
-## AI Development Support
+- **Administrator Panel**:
+  - Predefined administrator account
+  - Manage activities (add, edit, delete).
+  - Assign and manage instructors.
+  - Simulate email notifications for class changes.
 
-This project is configured with AI development tools to enhance the development experience, providing guidelines for:
+- **Parent Panel**:
+  - User registration and login.
+  - Onboarding that requires adding at least one child profile.
+  - Browse available classes with validations (e.g., enrollment limits).
+  - Manage enrollments with cancellation policies (e.g., up to 24 hours before classes start).
+  - Generate weekly cost reports in Excel format.
 
-- Project structure
-- Coding practices
-- Frontend development
-- Styling with Tailwind
-- Accessibility best practices
-- Astro and React guidelines
+### Excluded from MVP (Planned Future Enhancements):
 
-### Cursor IDE
+- Payment integrations and real-time scheduling tools.
+- Advanced role management beyond basic parent and administrator roles.
+- Detailed AI-based recommendations.
 
-The project includes AI rules in `.cursor/rules/` directory that help Cursor IDE understand the project structure and provide better code suggestions.
+## Project Status
 
-### GitHub Copilot
-
-AI instructions for GitHub Copilot are available in `.github/copilot-instructions.md`
-
-### Windsurf
-
-The `.windsurfrules` file contains AI configuration for Windsurf.
-
-## Contributing
-
-Please follow the AI guidelines and coding practices defined in the AI configuration files when contributing to this project.
+The project is currently in the MVP stage, focusing on delivering core functionalities with plans for future enhancements.
 
 ## License
 
-MIT
+This project is licensed under the MIT License.
