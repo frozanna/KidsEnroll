@@ -17,7 +17,7 @@ import { createError, normalizeUnknownError, fromZodError } from "../../lib/serv
 import type { ChildrenListResponseDTO, ChildDTO, CreateChildResponseDTO } from "../../types";
 import { jsonResponse, errorToDto, authenticateParent } from "../../lib/api/helper";
 import { validateCreateChildBody } from "../../lib/validation/children.schema";
-import { createChild } from "../../lib/services/children.service";
+import { createChild, listChildren } from "../../lib/services/children.service";
 
 export const prerender = false; // API route - avoid prerendering
 
@@ -45,28 +45,7 @@ export const GET: APIRoute = async (context) => {
   );
 
   try {
-    const { data: rows, error: childrenError } = await supabase
-      .from("children")
-      .select("id, first_name, last_name, birth_date, description, created_at")
-      .eq("parent_id", profile.id);
-
-    if (childrenError) {
-      const err = createError("INTERNAL_ERROR", childrenError.message);
-      // eslint-disable-next-line no-console
-      console.log(
-        JSON.stringify({
-          action: "LIST_CHILDREN",
-          phase: "error",
-          parent_id: profile.id,
-          error_code: err.code,
-          status: err.status,
-          timestamp: new Date().toISOString(),
-        })
-      );
-      return jsonResponse(errorToDto(err), err.status);
-    }
-
-    const list: ChildDTO[] = rows ?? [];
+    const list: ChildDTO[] = await listChildren(supabase, profile.id);
     const response: ChildrenListResponseDTO = { children: list };
 
     // --- Logging: success ---

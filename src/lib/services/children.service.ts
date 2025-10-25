@@ -80,3 +80,21 @@ export async function getChildById(supabase: SupabaseClient, parentId: string, c
   // Record exists but parent mismatch -> ownership violation
   throw createError("CHILD_NOT_OWNED", "Child does not belong to current parent");
 }
+
+/**
+ * Lists all children owned by the authenticated parent.
+ * Extracted from transport layer (GET /api/children) for consistency & reuse.
+ * @param supabase - Supabase client from context.locals
+ * @param parentId - profiles.id of authenticated parent
+ * @returns Array of ChildDTO (may be empty)
+ * @throws ApiError with code INTERNAL_ERROR when underlying query fails
+ */
+export async function listChildren(supabase: SupabaseClient, parentId: string): Promise<ChildDTO[]> {
+  const { data: rows, error } = await supabase
+    .from("children")
+    .select("id, first_name, last_name, birth_date, description, created_at")
+    .eq("parent_id", parentId);
+
+  if (error) throw createError("INTERNAL_ERROR", error.message);
+  return rows ?? [];
+}
