@@ -11,59 +11,22 @@ import type { APIRoute } from "astro";
 import type { SupabaseClient } from "../../db/supabase.client";
 import { validateCreateEnrollmentBody } from "../../lib/validation/enrollments.schema";
 import { createEnrollment } from "../../lib/services/enrollments.service";
-import { fromZodError, normalizeUnknownError, ApiError, createError } from "../../lib/services/errors";
-import type { ErrorResponseDTO, CreateEnrollmentResponseDTO } from "../../types";
+import { fromZodError, normalizeUnknownError, createError } from "../../lib/services/errors";
+import { jsonResponse, errorToDto, authenticateParent } from "../../lib/api/helper";
+import type { CreateEnrollmentResponseDTO } from "../../types";
 
 export const prerender = false; // API route - no prerendering
-
-// Utility: unified JSON response helper.
-function jsonResponse(data: unknown, status = 200): Response {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: { "Content-Type": "application/json" },
-  });
-}
-
-// Map ApiError to transport ErrorResponseDTO
-function errorToDto(err: ApiError): ErrorResponseDTO {
-  const base = {
-    error: {
-      code: err.code,
-      message: err.message,
-      ...(err.details ? { details: err.details } : {}),
-    },
-  } satisfies ErrorResponseDTO;
-  return base;
-}
 
 export const POST: APIRoute = async (context) => {
   const supabase = context.locals.supabase as SupabaseClient;
 
-  // -- Auth & role check --
-  const { data: authData, error: authError } = await supabase.auth.getUser();
-  if (authError || !authData?.user) {
-    const err = createError("AUTH_UNAUTHORIZED", "Unauthorized", { status: 401 });
-    return jsonResponse(errorToDto(err), err.status);
-  }
-
-  // Fetch profile to confirm role parent
-  const { data: profile, error: profileError } = await supabase
-    .from("profiles")
-    .select("id, role")
-    .eq("id", authData.user.id)
-    .maybeSingle();
-  if (profileError) {
-    const err = createError("INTERNAL_ERROR", profileError.message);
-    return jsonResponse(errorToDto(err), err.status);
-  }
-  if (!profile) {
-    const err = createError("AUTH_UNAUTHORIZED", "Profile not found", { status: 401 });
-    return jsonResponse(errorToDto(err), err.status);
-  }
-  if (profile.role !== "parent") {
-    // Per plan: role mismatch -> 403
-    const err = createError("AUTH_UNAUTHORIZED", "Forbidden: parent role required", { status: 403 });
-    return jsonResponse(errorToDto(err), err.status);
+  // -- Auth & role check (centralized) --
+  let profile: { id: string; role: string };
+  try {
+    profile = await authenticateParent(supabase);
+  } catch (err: unknown) {
+    const apiErr = normalizeUnknownError(err);
+    return jsonResponse(errorToDto(apiErr), apiErr.status);
   }
 
   // -- Parse & validate body --

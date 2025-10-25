@@ -95,6 +95,11 @@ export interface UpdateChildCommand {
 // Response after creation includes parent_id for confirmation.
 export type CreateChildResponseDTO = ChildEntity;
 
+// List children response (MVP without pagination; future extension may add pagination)
+export interface ChildrenListResponseDTO {
+  children: ChildDTO[];
+}
+
 // --- Activities (Parent-facing) ---
 // Worker subset used in activity exposure to parents.
 export type ActivityWorkerDTO = Pick<WorkerEntity, "id" | "first_name" | "last_name" | "email">;
