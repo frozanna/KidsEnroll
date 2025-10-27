@@ -13,7 +13,7 @@
 //  - RLS policies exist to ensure parent cannot query others' children (defense-in-depth with parent_id injection)
 
 import type { SupabaseClient } from "../../db/supabase.client";
-import type { CreateChildCommand, CreateChildResponseDTO, ChildDTO } from "../../types";
+import type { CreateChildCommand, CreateChildResponseDTO, ChildDTO, UpdateChildCommand } from "../../types";
 import { createError } from "./errors";
 
 /**
@@ -97,4 +97,59 @@ export async function listChildren(supabase: SupabaseClient, parentId: string): 
 
   if (error) throw createError("INTERNAL_ERROR", error.message);
   return rows ?? [];
+}
+
+/**
+ * Updates a child record owned by the authenticated parent.
+ * Implementation per /.ai/endpoints/up-child-implementation-plan.md (section 9 step 3 & section 10 contract).
+ * Performs single UPDATE ... RETURNING round-trip; falls back to ownership distinction query when no row updated.
+ * @param supabase - Supabase client
+ * @param parentId - profiles.id of authenticated parent
+ * @param childId - numeric child id (>0) validated upstream
+ * @param command - partial update fields (already Zod-validated; at least one present)
+ * @returns Full child record (CreateChildResponseDTO shape includes parent_id)
+ * @throws ApiError codes: CHILD_NOT_FOUND | CHILD_NOT_OWNED | VALIDATION_ERROR | INTERNAL_ERROR
+ */
+export async function updateChild(
+  supabase: SupabaseClient,
+  parentId: string,
+  childId: number,
+  command: UpdateChildCommand
+): Promise<CreateChildResponseDTO> {
+  // Build update object (whitelist fields). Skip undefined to avoid overwriting.
+  const updateFields: Record<string, unknown> = {};
+  if (command.first_name !== undefined) updateFields.first_name = command.first_name;
+  if (command.last_name !== undefined) updateFields.last_name = command.last_name;
+  if (command.birth_date !== undefined) updateFields.birth_date = command.birth_date;
+  if (command.description !== undefined) updateFields.description = command.description ?? null;
+
+  if (Object.keys(updateFields).length === 0) {
+    // Defensive guard (schema should already prevent this scenario)
+    throw createError("VALIDATION_ERROR", "No fields to update");
+  }
+
+  const { data: updated, error: updateError } = await supabase
+    .from("children")
+    .update(updateFields)
+    .eq("id", childId)
+    .eq("parent_id", parentId)
+    .select("id, first_name, last_name, birth_date, description, parent_id, created_at")
+    .maybeSingle();
+
+  if (updateError) throw createError("INTERNAL_ERROR", updateError.message);
+  if (updated) return updated;
+
+  // Distinguish: not found vs not owned (lightweight query)
+  const { data: anyChild, error: anyError } = await supabase
+    .from("children")
+    .select("id, parent_id")
+    .eq("id", childId)
+    .maybeSingle();
+
+  if (anyError) throw createError("INTERNAL_ERROR", anyError.message);
+  if (!anyChild) throw createError("CHILD_NOT_FOUND", "Child not found");
+  if (anyChild.parent_id !== parentId) throw createError("CHILD_NOT_OWNED", "Child does not belong to current parent");
+
+  // Fallback unexpected state (row exists & owned but update returned no data)
+  throw createError("INTERNAL_ERROR", "Failed to update child record");
 }

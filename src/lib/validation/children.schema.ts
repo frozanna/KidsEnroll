@@ -49,6 +49,36 @@ export function validateCreateChildBody(body: unknown): CreateChildSchemaInput {
   return createChildSchema.parse(body);
 }
 
+// --- Update Child (PATCH) ---
+// All fields optional; must supply at least one. Mirrors creation constraints.
+// birth_date validation reused; description normalization (empty string -> null).
+// Refine ensures at least one field present (undefined fields omitted by caller).
+export const updateChildSchema = z
+  .object({
+    first_name: z.string().trim().min(1, "first_name required").max(100, "first_name too long").optional(),
+    last_name: z.string().trim().min(1, "last_name required").max(100, "last_name too long").optional(),
+    birth_date: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/g, "birth_date must be YYYY-MM-DD")
+      .refine((val) => isValidPastOrTodayDate(val), "birth_date cannot be in the future or invalid")
+      .optional(),
+    description: z
+      .string()
+      .trim()
+      .max(1000, "description too long")
+      .optional()
+      .transform((v) => (v === "" ? null : v)),
+  })
+  .refine((obj) => Object.keys(obj).some((k) => (obj as Record<string, unknown>)[k] !== undefined), {
+    message: "At least one field must be provided",
+  });
+
+export type UpdateChildSchemaInput = z.infer<typeof updateChildSchema>;
+
+export function validateUpdateChildBody(body: unknown): UpdateChildSchemaInput {
+  return updateChildSchema.parse(body);
+}
+
 export const childIdParamSchema = z.object({
   id: z
     .string()
