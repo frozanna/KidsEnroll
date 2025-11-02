@@ -176,7 +176,6 @@ export type WorkerDTO = WorkerEntity;
 
 export interface WorkersListResponseDTO {
   workers: WorkerDTO[];
-  pagination: PaginationDTO;
 }
 
 export interface WorkerCreateCommand {

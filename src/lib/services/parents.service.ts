@@ -18,12 +18,12 @@ import type { SupabaseClient } from "../../db/supabase.client";
 import type {
   ParentListItemDTO,
   ParentsListResponseDTO,
-  PaginationDTO,
   ParentDetailDTO,
   ParentDetailChildDTO,
   ParentDeleteResponseDTO,
 } from "../../types";
 import { createError } from "./errors";
+import { buildRange, buildPagination } from "../pagination.utils";
 import type { ListParentsQuery } from "../validation/admin.parents.schema";
 
 interface RawProfileRow {
@@ -45,8 +45,7 @@ interface RawChildRow {
 // ---- listParents ----
 export async function listParents(supabase: SupabaseClient, query: ListParentsQuery): Promise<ParentsListResponseDTO> {
   const { page, limit, search } = query;
-  const offset = (page - 1) * limit;
-  const rangeEnd = offset + limit - 1;
+  const { offset, end } = buildRange(page, limit);
 
   // Base query: parents only
   let parentQuery = supabase
@@ -54,7 +53,7 @@ export async function listParents(supabase: SupabaseClient, query: ListParentsQu
     .select("id, first_name, last_name, created_at, role", { count: "exact" })
     .eq("role", "parent")
     .order("created_at", { ascending: false })
-    .range(offset, rangeEnd);
+    .range(offset, end);
 
   if (search) {
     // Case-insensitive ILIKE on first_name OR last_name
@@ -94,8 +93,7 @@ export async function listParents(supabase: SupabaseClient, query: ListParentsQu
     children_count: childrenCountMap.get(p.id) || 0,
   }));
 
-  const pagination: PaginationDTO = { page, limit, total };
-  return { parents, pagination } satisfies ParentsListResponseDTO;
+  return { parents, pagination: buildPagination(page, limit, total) } satisfies ParentsListResponseDTO;
 }
 
 // ---- getParentById ----

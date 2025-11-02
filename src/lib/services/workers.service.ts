@@ -20,39 +20,20 @@ import { createError } from "./errors";
 import { PG_UNIQUE_VIOLATION } from "../postgres.utils";
 import type { PostgrestErrorLike } from "../postgres.utils";
 
-export interface ListWorkersInput {
-  page: number;
-  limit: number;
-}
-
 /**
- * List workers with pagination using Supabase range and exact count.
+ * List workers.
  */
-export async function listWorkers(
-  supabase: SupabaseClient,
-  { page, limit }: ListWorkersInput
-): Promise<WorkersListResponseDTO> {
-  const offset = (page - 1) * limit;
-  const rangeEnd = offset + limit - 1;
-
-  const { data, error, count } = await supabase
+export async function listWorkers(supabase: SupabaseClient): Promise<WorkersListResponseDTO> {
+  const { data, error } = await supabase
     .from("workers")
-    .select("id, first_name, last_name, email, created_at", { count: "exact" })
-    .order("created_at", { ascending: false })
-    .range(offset, rangeEnd);
+    .select("id, first_name, last_name, email, created_at")
+    .order("created_at", { ascending: false });
 
   if (error) {
     throw createError("INTERNAL_ERROR", error.message);
   }
 
-  return {
-    workers: (data as WorkerDTO[]) ?? [],
-    pagination: {
-      page,
-      limit,
-      total: count ?? 0,
-    },
-  } satisfies WorkersListResponseDTO;
+  return { workers: (data as WorkerDTO[]) ?? [] } satisfies WorkersListResponseDTO;
 }
 
 /**

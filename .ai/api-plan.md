@@ -394,9 +394,6 @@
 - **Path:** `/api/admin/workers`
 - **Description:** Get all workers/instructors
 - **Authentication:** Required (Admin role)
-- **Query Parameters:**
-  - `page` (integer, default: 1): Page number
-  - `limit` (integer, default: 20, max: 100): Items per page
 - **Success Response (200 OK):**
 ```json
 {
@@ -408,12 +405,7 @@
       "email": "jane.doe@facility.com",
       "created_at": "2025-01-01T10:00:00Z"
     }
-  ],
-  "pagination": {
-    "page": 1,
-    "limit": 20,
-    "total": 15
-  }
+  ]
 }
 ```
 - **Error Responses:**
@@ -817,7 +809,6 @@ All request bodies are validated using **Zod schemas** at the API layer before p
 - **Rule:** New parents must add at least one child before accessing other features
 - **Implementation:** 
   - Check children count on protected parent endpoints
-  - Return 403 Forbidden with onboarding required message if no children exist
   - Redirect to child creation flow
 
 #### 2. Enrollment Capacity Check (US-006)

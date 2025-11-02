@@ -137,7 +137,7 @@ export async function createActivity(
   return await selectActivityDto(supabase, activityId);
 }
 
-export async function updateAdminActivity(
+export async function updateActivity(
   supabase: SupabaseClient,
   id: number,
   command: AdminActivityUpdateCommand
@@ -204,10 +204,7 @@ export async function updateAdminActivity(
 // 2. Count enrollments (exact, head) for notifications_sent
 // 3. Delete activity row (CASCADE removes enrollments + tags)
 // 4. Return AdminActivityDeleteResponseDTO
-export async function deleteAdminActivity(
-  supabase: SupabaseClient,
-  id: number
-): Promise<AdminActivityDeleteResponseDTO> {
+export async function deleteActivity(supabase: SupabaseClient, id: number): Promise<AdminActivityDeleteResponseDTO> {
   // 1. Existence check
   const existing = await fetchActivityRow(supabase, id);
   if (!existing) {

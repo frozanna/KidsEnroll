@@ -22,7 +22,7 @@ import {
   validateAdminActivityIdParam,
   validateUpdateAdminActivityBody,
 } from "../../../../lib/validation/admin.activities.schema";
-import { updateAdminActivity, deleteAdminActivity } from "../../../../lib/services/admin.activities.service";
+import { updateActivity, deleteActivity } from "../../../../lib/services/admin.activities.service";
 import type { AdminActivityUpdateResponseDTO, AdminActivityDeleteResponseDTO } from "../../../../types";
 
 export const prerender = false;
@@ -80,7 +80,7 @@ export const PATCH: APIRoute = async (context) => {
   );
 
   try {
-    const updated: AdminActivityUpdateResponseDTO = await updateAdminActivity(supabase, id, parsed);
+    const updated: AdminActivityUpdateResponseDTO = await updateActivity(supabase, id, parsed);
 
     // ---- Logging: success ----
     // eslint-disable-next-line no-console
@@ -153,7 +153,7 @@ export const DELETE: APIRoute = async (context) => {
   );
 
   try {
-    const deleted: AdminActivityDeleteResponseDTO = await deleteAdminActivity(supabase, id);
+    const deleted: AdminActivityDeleteResponseDTO = await deleteActivity(supabase, id);
 
     // ---- Logging: success ----
     // eslint-disable-next-line no-console

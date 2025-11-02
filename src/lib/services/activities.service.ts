@@ -20,13 +20,8 @@
 //  - Invalid start_datetime format -> INTERNAL_ERROR
 
 import type { SupabaseClient } from "../../db/supabase.client";
-import type {
-  ActivitiesListResponseDTO,
-  ActivityListItemDTO,
-  ActivityWorkerDTO,
-  PaginationDTO,
-  ActivityDTO,
-} from "../../types";
+import type { ActivitiesListResponseDTO, ActivityListItemDTO, ActivityWorkerDTO, ActivityDTO } from "../../types";
+import { buildPagination } from "../pagination.utils";
 import { createError } from "./errors";
 import type { ActivitiesQueryFilters } from "../validation/activities.schema";
 
@@ -163,15 +158,9 @@ export async function listActivities(
   const endIndex = startIndex + filters.limit;
   const pageSlice = startIndex < total ? filtered.slice(startIndex, endIndex) : [];
 
-  const pagination: PaginationDTO = {
-    page: filters.page,
-    limit: filters.limit,
-    total,
-  };
-
   return {
     activities: pageSlice,
-    pagination,
+    pagination: buildPagination(filters.page, filters.limit, total),
   } satisfies ActivitiesListResponseDTO;
 }
 
@@ -233,6 +222,6 @@ export async function getActivityById(supabase: SupabaseClient, id: number): Pro
 function emptyResponse(page: number, limit: number): ActivitiesListResponseDTO {
   return {
     activities: [],
-    pagination: { page, limit, total: 0 },
+    pagination: buildPagination(page, limit, 0),
   };
 }

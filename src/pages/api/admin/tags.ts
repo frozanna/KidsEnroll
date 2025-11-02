@@ -18,7 +18,7 @@ import type { APIRoute } from "astro";
 import type { SupabaseClient } from "../../../db/supabase.client";
 import { authenticateAdmin, jsonResponse, errorToDto } from "../../../lib/api/helper";
 import { normalizeUnknownError } from "../../../lib/services/errors";
-import { listAdminActivityTags } from "../../../lib/services/admin.tags.service";
+import { listActivityTags } from "../../../lib/services/admin.tags.service";
 
 export const prerender = false;
 
@@ -57,7 +57,7 @@ export const GET: APIRoute = async (context) => {
 
   // ---- Service Call ----
   try {
-    const dto = listAdminActivityTags();
+    const dto = listActivityTags();
 
     // ---- Logging: success ----
     // eslint-disable-next-line no-console

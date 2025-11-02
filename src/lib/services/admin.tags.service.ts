@@ -23,7 +23,7 @@ export const ADMIN_ACTIVITY_TAGS: readonly string[] = [
  * Return list of available tags for admin activity management.
  * Static O(1) operation; no Supabase interaction required in MVP.
  */
-export function listAdminActivityTags(): TagsListResponseDTO {
+export function listActivityTags(): TagsListResponseDTO {
   // Defensive copy (immutability) although primitive strings; facilitates future extension.
   return { tags: [...ADMIN_ACTIVITY_TAGS] };
 }
