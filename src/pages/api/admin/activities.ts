@@ -18,7 +18,7 @@ import type { SupabaseClient } from "../../../db/supabase.client";
 import { authenticateAdmin, jsonResponse, errorToDto } from "../../../lib/api/helper";
 import { fromZodError, normalizeUnknownError } from "../../../lib/services/errors";
 import { validateCreateAdminActivityBody } from "../../../lib/validation/admin.activities.schema";
-import { createAdminActivity } from "../../../lib/services/admin.activities.service";
+import { createActivity } from "../../../lib/services/admin.activities.service";
 import type { AdminActivityDTO } from "../../../types";
 
 export const prerender = false;
@@ -63,7 +63,7 @@ export const POST: APIRoute = async (context) => {
   );
 
   try {
-    const activity: AdminActivityDTO = await createAdminActivity(supabase, parsed);
+    const activity: AdminActivityDTO = await createActivity(supabase, parsed);
 
     // ---- Logging: success ----
     // eslint-disable-next-line no-console

@@ -22,14 +22,16 @@ import type {
   AdminActivityDTO,
   AdminActivityUpdateCommand,
   AdminActivityUpdateResponseDTO,
+  AdminActivityDeleteResponseDTO,
 } from "../../types";
 import { createError } from "./errors";
-import type { PostgrestErrorLike } from "../postgres";
+import { PGRST_ROW_NOT_FOUND } from "../postgres.utils";
+import type { PostgrestErrorLike } from "../postgres.utils";
 
 // Helper: fetch worker existence (id only) returning boolean.
 async function workerExists(supabase: SupabaseClient, id: number): Promise<boolean> {
   const { data, error } = await supabase.from("workers").select("id").eq("id", id).maybeSingle();
-  if (error && error.code !== "PGRST116") {
+  if (error && error.code !== PGRST_ROW_NOT_FOUND) {
     throw createError("INTERNAL_ERROR", error.message);
   }
   return !!data;
@@ -42,7 +44,7 @@ async function fetchActivityRow(supabase: SupabaseClient, id: number) {
     .select("id, name, description, cost, participant_limit, start_datetime, worker_id, facility_id, created_at")
     .eq("id", id)
     .maybeSingle();
-  if (error && error.code !== "PGRST116") {
+  if (error && error.code !== PGRST_ROW_NOT_FOUND) {
     throw createError("INTERNAL_ERROR", error.message);
   }
   return data as AdminActivityDTO | null;
@@ -94,7 +96,7 @@ async function selectActivityDto(supabase: SupabaseClient, id: number): Promise<
   return row;
 }
 
-export async function createAdminActivity(
+export async function createActivity(
   supabase: SupabaseClient,
   command: AdminActivityCreateCommand
 ): Promise<AdminActivityDTO> {
@@ -194,4 +196,43 @@ export async function updateAdminActivity(
   // 8. Final select & assemble response
   const finalDto = await selectActivityDto(supabase, id);
   return { ...finalDto, notifications_sent } satisfies AdminActivityUpdateResponseDTO;
+}
+
+// Delete an activity and return notifications_sent (# of enrollments referencing it before removal)
+// Steps:
+// 1. Ensure activity exists (ACTIVITY_NOT_FOUND if not)
+// 2. Count enrollments (exact, head) for notifications_sent
+// 3. Delete activity row (CASCADE removes enrollments + tags)
+// 4. Return AdminActivityDeleteResponseDTO
+export async function deleteAdminActivity(
+  supabase: SupabaseClient,
+  id: number
+): Promise<AdminActivityDeleteResponseDTO> {
+  // 1. Existence check
+  const existing = await fetchActivityRow(supabase, id);
+  if (!existing) {
+    throw createError("ACTIVITY_NOT_FOUND", "Activity not found");
+  }
+
+  // 2. Count enrollments referencing this activity
+  const { count: enrollCount, error: countError } = await supabase
+    .from("enrollments")
+    .select("id", { count: "exact", head: true })
+    .eq("activity_id", id);
+  if (countError) {
+    throw createError("INTERNAL_ERROR", countError.message);
+  }
+  const notifications_sent = enrollCount ?? 0;
+
+  // 3. Delete activity (cascade will remove dependents)
+  const { error: delError } = await supabase.from("activities").delete().eq("id", id);
+  if (delError) {
+    throw createError("INTERNAL_ERROR", delError.message);
+  }
+
+  // 4. Return DTO
+  return {
+    message: "Activity deleted successfully",
+    notifications_sent,
+  } satisfies AdminActivityDeleteResponseDTO;
 }

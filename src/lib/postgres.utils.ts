@@ -5,6 +5,8 @@
 // Postgres error code constants (https://www.postgresql.org/docs/current/errcodes-appendix.html)
 export const PG_UNIQUE_VIOLATION = "23505"; // unique_violation
 export const PG_FOREIGN_KEY_VIOLATION = "23503"; // foreign_key_violation (reserved for future use)
+// PostgREST specific pseudo error code for "row not found" when using maybeSingle() (not a Postgres SQLSTATE)
+export const PGRST_ROW_NOT_FOUND = "PGRST116"; // used to detect absence without treating as internal error
 
 // Narrow shape for Supabase Postgrest error objects we care about when mapping codes.
 export interface PostgrestErrorLike {

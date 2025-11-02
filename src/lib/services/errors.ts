@@ -17,6 +17,7 @@ export type ErrorCode =
   | "ENROLLMENT_NOT_FOUND"
   | "WITHDRAWAL_TOO_LATE"
   | "AUTH_UNAUTHORIZED"
+  | "PARENT_NOT_FOUND"
   | "INTERNAL_ERROR";
 
 // Mapping of error codes to default HTTP status values.
@@ -34,6 +35,7 @@ const STATUS_MAP: Record<ErrorCode, number> = {
   ENROLLMENT_NOT_FOUND: 404,
   WITHDRAWAL_TOO_LATE: 400,
   AUTH_UNAUTHORIZED: 401,
+  PARENT_NOT_FOUND: 404,
   INTERNAL_ERROR: 500,
 };
 

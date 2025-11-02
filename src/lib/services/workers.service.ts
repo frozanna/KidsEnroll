@@ -17,8 +17,8 @@ import type { SupabaseClient } from "../../db/supabase.client";
 import type { WorkerDTO, WorkersListResponseDTO } from "../../types";
 import type { WorkerDeleteResponseDTO } from "../../types";
 import { createError } from "./errors";
-import { PG_UNIQUE_VIOLATION } from "../postgres";
-import type { PostgrestErrorLike } from "../postgres";
+import { PG_UNIQUE_VIOLATION } from "../postgres.utils";
+import type { PostgrestErrorLike } from "../postgres.utils";
 
 export interface ListWorkersInput {
   page: number;
