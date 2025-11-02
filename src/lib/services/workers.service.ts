@@ -1,5 +1,4 @@
 // Service layer for admin Workers endpoints
-// Implements listWorkers and getWorkerById according to plan in .ai/endpoints/workers-implementation-plan.md
 // Responsibilities:
 //  - Fetch paginated workers list with total count
 //  - Fetch single worker by id
@@ -13,13 +12,13 @@
 //  - Supabase query error -> INTERNAL_ERROR
 //  - Pagination beyond end -> empty workers array, total reflects full size
 //
-// Performance Considerations:
-//  - Single query with count for list (uses select with count: 'exact' and range)
-//  - Ordered by created_at descending for determinism
 
 import type { SupabaseClient } from "../../db/supabase.client";
 import type { WorkerDTO, WorkersListResponseDTO } from "../../types";
+import type { WorkerDeleteResponseDTO } from "../../types";
 import { createError } from "./errors";
+import { PG_UNIQUE_VIOLATION } from "../postgres";
+import type { PostgrestErrorLike } from "../postgres";
 
 export interface ListWorkersInput {
   page: number;
@@ -76,14 +75,6 @@ export async function getWorkerById(supabase: SupabaseClient, id: number): Promi
 }
 
 // ---- Create / Update ----
-// Unique violation Postgres error code constant (defensive; Supabase surfaces code 23505 for duplicate key)
-const UNIQUE_VIOLATION_CODE = "23505";
-
-interface PostgrestErrorLike {
-  message: string;
-  code?: string;
-}
-
 export async function createWorker(
   supabase: SupabaseClient,
   input: { first_name: string; last_name: string; email: string }
@@ -96,7 +87,7 @@ export async function createWorker(
 
   if (error) {
     const pgErr = error as PostgrestErrorLike;
-    if (pgErr.code === UNIQUE_VIOLATION_CODE) {
+    if (pgErr.code === PG_UNIQUE_VIOLATION) {
       throw createError("WORKER_EMAIL_CONFLICT", "Worker email already exists");
     }
     throw createError("INTERNAL_ERROR", error.message);
@@ -118,7 +109,7 @@ export async function updateWorker(
 
   if (error) {
     const pgErr = error as PostgrestErrorLike;
-    if (pgErr.code === UNIQUE_VIOLATION_CODE) {
+    if (pgErr.code === PG_UNIQUE_VIOLATION) {
       throw createError("WORKER_EMAIL_CONFLICT", "Worker email already exists");
     }
     throw createError("INTERNAL_ERROR", error.message);
@@ -127,4 +118,51 @@ export async function updateWorker(
     throw createError("WORKER_NOT_FOUND", "Worker not found");
   }
   return data as WorkerDTO;
+}
+
+// ---- Delete ----
+/**
+ * Delete a worker by id ensuring no activities are associated.
+ * Flow:
+ *  1. Verify worker exists (maybeSingle select id)
+ *  2. Check for at least one associated activity (select id limit 1)
+ *  3. Perform delete, mapping unexpected errors to INTERNAL_ERROR
+ *  4. Return confirmation message
+ *
+ * Concurrency note: A race creating an activity after the precondition check but before delete
+ * might still result in cascading delete if FK has ON DELETE CASCADE. MVP accepts this risk.
+ */
+export async function deleteWorker(supabase: SupabaseClient, id: number): Promise<WorkerDeleteResponseDTO> {
+  // 1. Existence check
+  const { data: existing, error: existError } = await supabase.from("workers").select("id").eq("id", id).maybeSingle();
+  if (existError) {
+    throw createError("INTERNAL_ERROR", existError.message);
+  }
+  if (!existing) {
+    throw createError("WORKER_NOT_FOUND", "Worker not found");
+  }
+
+  // 2. Association check (limit 1 for efficiency)
+  const { data: activityRef, error: actError } = await supabase
+    .from("activities")
+    .select("id")
+    .eq("worker_id", id)
+    .limit(1)
+    .maybeSingle();
+  // PGRST116 = No rows found for maybeSingle (acceptable)
+  if (actError && actError.code !== "PGRST116") {
+    throw createError("INTERNAL_ERROR", actError.message);
+  }
+  if (activityRef) {
+    throw createError("WORKER_HAS_ACTIVITIES", "Worker has assigned activities and cannot be deleted");
+  }
+
+  // 3. Delete
+  const { error: delError } = await supabase.from("workers").delete().eq("id", id);
+  if (delError) {
+    throw createError("INTERNAL_ERROR", delError.message);
+  }
+
+  // 4. Response
+  return { message: "Worker deleted successfully" };
 }

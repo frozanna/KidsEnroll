@@ -110,12 +110,12 @@ export const GET: APIRoute = async (context) => {
     const workbook = new Workbook();
     const sheet = workbook.addWorksheet("WeeklyCosts");
     sheet.columns = [
-      { header: "Child First Name", key: "child_first_name" },
-      { header: "Child Last Name", key: "child_last_name" },
-      { header: "Activity Name", key: "activity_name" },
-      { header: "Activity Date", key: "activity_date" },
-      { header: "Activity Time", key: "activity_time" },
-      { header: "Cost", key: "cost" },
+      { header: "Imię dziecka", key: "child_first_name" },
+      { header: "Nazwisko dziecka", key: "child_last_name" },
+      { header: "Nazwa aktywności", key: "activity_name" },
+      { header: "Data aktywności", key: "activity_date" },
+      { header: "Czas aktywności", key: "activity_time" },
+      { header: "Koszt", key: "cost" },
     ];
     for (const row of dto.rows) {
       sheet.addRow(row);
