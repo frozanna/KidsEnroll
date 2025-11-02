@@ -18,3 +18,17 @@ export type CreateEnrollmentSchemaInput = z.infer<typeof createEnrollmentSchema>
 export function validateCreateEnrollmentBody(body: unknown): CreateEnrollmentSchemaInput {
   return createEnrollmentSchema.parse(body);
 }
+
+// --- Withdraw Enrollment Path Params Schema ---
+// Validates dynamic route params for DELETE /api/enrollments/:childId/:activityId
+// Performs string to number coercion with regex safeguard before numeric checks.
+export const withdrawParamsSchema = z.object({
+  childId: z.string().regex(/^\d+$/).transform(Number).pipe(z.number().int().positive()),
+  activityId: z.string().regex(/^\d+$/).transform(Number).pipe(z.number().int().positive()),
+});
+
+export type WithdrawParamsSchemaInput = z.infer<typeof withdrawParamsSchema>;
+
+export function validateWithdrawParams(params: Record<string, string | undefined>): WithdrawParamsSchemaInput {
+  return withdrawParamsSchema.parse(params);
+}

@@ -61,3 +61,31 @@ export async function authenticateParent(supabase: SupabaseClient): Promise<{ id
 
   return profile;
 }
+
+/**
+ * Authenticate the current user and ensure they have the admin role.
+ * Returns the profile (id, role) when successful; throws ApiError on failure.
+ * Mirrors authenticateParent but enforces role === 'admin'.
+ */
+export async function authenticateAdmin(supabase: SupabaseClient): Promise<{ id: string; role: string }> {
+  const { data: authData, error: authError } = await supabase.auth.getUser();
+  if (authError || !authData?.user) {
+    throw createError("AUTH_UNAUTHORIZED", "Unauthorized", { status: 401 });
+  }
+
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("id, role")
+    .eq("id", authData.user.id)
+    .maybeSingle();
+  if (profileError) {
+    throw createError("INTERNAL_ERROR", profileError.message);
+  }
+  if (!profile) {
+    throw createError("AUTH_UNAUTHORIZED", "Profile not found", { status: 401 });
+  }
+  if (profile.role !== "admin") {
+    throw createError("AUTH_UNAUTHORIZED", "Forbidden: admin role required", { status: 403 });
+  }
+  return profile;
+}
