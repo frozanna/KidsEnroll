@@ -1,0 +1,12 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import { ActivitiesListPage } from "../../../components/dashboard/activities/ActivitiesListPage";
+export const prerender = false;
+---
+
+<Layout>
+  <main class="mx-auto max-w-6xl px-4 py-8" aria-labelledby="activities-heading">
+    <h1 id="activities-heading" class="text-2xl font-semibold mb-6">Zajęcia</h1>
+    <ActivitiesListPage client:visible />
+  </main>
+</Layout>

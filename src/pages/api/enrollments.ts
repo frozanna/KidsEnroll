@@ -1,5 +1,4 @@
 // REST API Endpoint: Create Enrollment (POST /api/enrollments)
-// Implements the flow defined in /.ai/enrollment-implementation-plan.md
 // Responsibilities here (transport layer):
 //  - Extract & validate request body (Zod schema)
 //  - Authenticate & authorize (must be logged in & role parent)
