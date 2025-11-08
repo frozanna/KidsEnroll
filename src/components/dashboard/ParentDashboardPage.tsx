@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { useParentDashboard } from "./useParentDashboard";
+import React, { useEffect, useCallback } from "react";
+import { useParentDashboard } from "../hooks/parentDashboard/useParentDashboard.ts";
 import { ChildrenAccordion } from "./ChildrenAccordion";
 import { ActionsBar } from "./actions/ActionsBar";
 import { EmptyChildrenState } from "./EmptyChildrenState";
@@ -25,14 +25,23 @@ const ParentDashboardPage: React.FC = () => {
     // initial children fetch handled inside hook.
   }, []);
 
+  // Toast errors outside render to avoid duplicate side-effects
+  useEffect(() => {
+    if (state.errorChildren) {
+      toast.error(state.errorChildren);
+    }
+  }, [state.errorChildren, toast]);
+
+  const handleWithdraw = useCallback(
+    ({ childId, activityId }: { childId: number; activityId: number }) => withdraw(childId, activityId),
+    [withdraw]
+  );
+
   if (state.loadingChildren) {
     return <LoadingSpinner size="lg" message="Ładowanie dzieci..." />;
   }
 
   if (!state.loadingChildren && state.children.length === 0) {
-    if (state.errorChildren) {
-      toast.error(state.errorChildren);
-    }
     return <EmptyChildrenState onAddChild={navigateAddChild} />;
   }
 
@@ -56,7 +65,7 @@ const ParentDashboardPage: React.FC = () => {
         loadingChildIds={state.loadingChildEnrollments}
         loadingEnrollmentsFor={state.loadingChildEnrollments}
         enrollmentsByChild={state.enrollmentsByChild}
-        onWithdraw={({ childId, activityId }: { childId: number; activityId: number }) => withdraw(childId, activityId)}
+        onWithdraw={handleWithdraw}
         onExpand={(childId: number) => {
           toggleChildExpansion(childId);
           if (!isChildExpanded(childId)) {

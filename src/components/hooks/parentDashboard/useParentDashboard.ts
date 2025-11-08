@@ -1,10 +1,10 @@
 import { useCallback, useMemo, useState } from "react";
-import { formatUtcToLocal, joinFullName } from "../../lib/utils";
-import { useToastFeedback } from "../useToastFeedback";
-import type { DashboardState, EnrollmentViewModel } from "./types";
+import { formatUtcToLocal, joinFullName } from "../../../lib/utils";
+import { useToastFeedback } from "../../../components/useToastFeedback";
+import type { DashboardState, EnrollmentViewModel } from "../../../components/dashboard/types";
 import { useChildren } from "./useChildren";
 
-// Placeholder until enrollments + report logic implemented.
+// Parent dashboard composite hook
 export function useParentDashboard() {
   const { children, loading: loadingChildren, error: errorChildren, refetch } = useChildren();
   const toast = useToastFeedback();

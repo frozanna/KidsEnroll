@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useId } from "react";
 import type { ChildViewModel, EnrollmentViewModel } from "./types";
 import { EnrollmentList } from "./enrollments/EnrollmentList";
 
@@ -21,13 +21,14 @@ export const ChildrenAccordion: React.FC<ChildrenAccordionProps> = ({
   loadingEnrollmentsFor = [],
   onWithdraw,
 }) => {
+  const idPrefix = useId();
   return (
     <div className="space-y-4" role="region" aria-label="Lista dzieci">
       {childrenData.map((child) => {
         const isExpanded = expandedIds.includes(child.id);
         const isLoading = loadingChildIds.includes(child.id);
-        const panelId = `child-panel-${child.id}`;
-        const contentId = `child-content-${child.id}`;
+        const panelId = `${idPrefix}-child-panel-${child.id}`;
+        const contentId = `${idPrefix}-child-content-${child.id}`;
         return (
           <section key={child.id} id={panelId} className="border rounded-md" aria-labelledby={`${panelId}-button`}>
             <button

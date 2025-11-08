@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
-import type { ChildDTO, ChildrenListResponseDTO } from "../../types";
-import type { ChildViewModel } from "./types";
+import type { ChildDTO, ChildrenListResponseDTO } from "../../../types";
+import type { ChildViewModel } from "../../../components/dashboard/types";
 
 // Derive human readable age from birth_date (YYYY-MM-DD). For now simple year diff; can refine later.
 function calculateAgeLabel(birthDateIso: string): string {
