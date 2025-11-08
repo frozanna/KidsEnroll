@@ -1,0 +1,92 @@
+---
+import Layout from "../../../../layouts/Layout.astro";
+import ChildForm from "../../../../components/children/ChildForm";
+import type { ChildDTO } from "../../../../types";
+import type { SupabaseClient } from "../../../../db/supabase.client";
+
+export interface Props {
+  child?: ChildDTO;
+  notFound?: boolean;
+  notOwned?: boolean;
+  loadError?: string;
+}
+
+const supabase = Astro.locals.supabase as SupabaseClient | undefined;
+const { id } = Astro.params;
+
+let child: ChildDTO | undefined;
+let notFound = false;
+let notOwned = false;
+let loadError: string | undefined;
+
+if (!supabase) {
+  loadError = "Brak klienta Supabase"; // middleware should provide
+} else if (id) {
+  try {
+    // Node.js fetch (SSR) requires an absolute URL. Relative paths like "/api/children/.." cause
+    // "Failed to parse URL" in the server environment. Use Astro.url (current request URL) as base.
+    // We purposely build via URL API to ensure correct origin also in dev / behind proxy.
+    const apiUrl = new URL(`/api/children/${encodeURIComponent(id)}`, Astro.url);
+    const res = await fetch(apiUrl.toString());
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      const code = data?.error?.code;
+      if (code === "CHILD_NOT_FOUND") notFound = true;
+      else if (code === "CHILD_NOT_OWNED") notOwned = true;
+      else loadError = data?.error?.message || `Błąd: ${res.status}`;
+    } else {
+      child = (await res.json()) as ChildDTO;
+    }
+  } catch (e) {
+    loadError = e instanceof Error ? e.message : "Nieznany błąd";
+  }
+}
+---
+
+<Layout title={child ? `Edytuj: ${child.first_name}` : "Edytuj dziecko"}>
+  <main class="mx-auto max-w-xl p-6">
+    <h1 class="text-2xl font-semibold mb-4">Edytuj dziecko</h1>
+    {
+      notFound && (
+        <div role="alert" class="rounded border border-red-300 bg-red-50 p-3 text-sm text-red-700">
+          Dziecko nie znalezione.
+        </div>
+      )
+    }
+    {
+      notOwned && (
+        <div role="alert" class="rounded border border-red-300 bg-red-50 p-3 text-sm text-red-700">
+          Brak uprawnień do edycji tego dziecka.
+        </div>
+      )
+    }
+    {
+      loadError && (
+        <div role="alert" class="rounded border border-red-300 bg-red-50 p-3 text-sm text-red-700">
+          {loadError}
+        </div>
+      )
+    }
+    {
+      !notFound && !notOwned && !loadError && child && (
+        <ChildForm
+          client:load
+          mode="edit"
+          childId={child.id}
+          initialData={{
+            first_name: child.first_name,
+            last_name: child.last_name,
+            birth_date: child.birth_date,
+            description: child.description ?? "",
+          }}
+        />
+      )
+    }
+  </main>
+</Layout>
+
+<style>
+  main {
+    min-height: calc(100vh - 4rem);
+  }
+</style>

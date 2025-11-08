@@ -1,0 +1,23 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import ChildForm from "../../../components/children/ChildForm";
+
+// Add Child page (Create mode)
+// SSR wrapper: minimal logic (auth handled in middleware). Renders React form.
+// Per plan: redirect after success handled client-side.
+// TODO (future): i18n of labels.
+---
+
+<Layout title="Dodaj dziecko">
+  <main class="mx-auto max-w-xl p-6">
+    <h1 class="text-2xl font-semibold mb-4">Dodaj dziecko</h1>
+    <p class="text-sm text-neutral-600 mb-6">Uzupełnij dane dziecka aby móc zapisywać je na zajęcia.</p>
+    <ChildForm client:load mode="create" />
+  </main>
+</Layout>
+
+<style>
+  main {
+    min-height: calc(100vh - 4rem);
+  }
+</style>

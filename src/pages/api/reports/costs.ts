@@ -44,7 +44,8 @@ export const GET: APIRoute = async (context) => {
     // Narrow potential ZodError
     if (err && typeof err === "object" && "issues" in err) {
       const apiErr = fromZodError(err as unknown as import("zod").ZodError);
-      // Log validation error
+      // Logging: error
+      // eslint-disable-next-line no-console
       console.log(
         JSON.stringify({
           action: "REPORT_WEEKLY_COSTS",
@@ -73,6 +74,7 @@ export const GET: APIRoute = async (context) => {
   }
 
   // Log start
+  // eslint-disable-next-line no-console
   console.log(
     JSON.stringify({
       action: "REPORT_WEEKLY_COSTS",
@@ -90,6 +92,7 @@ export const GET: APIRoute = async (context) => {
     dto = await generateWeeklyCostReport(supabase, profile.id, week.weekStart);
   } catch (err) {
     const apiErr = normalizeUnknownError(err);
+    // eslint-disable-next-line no-console
     console.log(
       JSON.stringify({
         action: "REPORT_WEEKLY_COSTS",
@@ -129,6 +132,7 @@ export const GET: APIRoute = async (context) => {
     const buffer = await workbook.xlsx.writeBuffer();
     const filename = `activity-costs-week-${dto.week_start}.xlsx`;
 
+    // eslint-disable-next-line no-console
     console.log(
       JSON.stringify({
         action: "REPORT_WEEKLY_COSTS",

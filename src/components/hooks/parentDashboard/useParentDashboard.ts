@@ -105,7 +105,7 @@ export function useParentDashboard() {
   );
 
   const navigateAddChild = useCallback(() => {
-    window.location.href = "/app/children/new"; // simple navigation; can replace with router if added later
+    window.location.href = "/app/dzieci/dodaj"; // simple navigation; can replace with router if added later
   }, []);
 
   const generateReport = useCallback(async () => {
