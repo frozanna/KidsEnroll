@@ -1,0 +1,14 @@
+---
+// Parent Dashboard page shell. Embeds interactive React component.
+// Access control (auth/role) assumed handled in middleware.
+import Layout from "../../layouts/Layout.astro";
+import ParentDashboardPage from "../../components/dashboard/ParentDashboardPage";
+export const prerender = false; // SSR only, dynamic user-specific data.
+---
+
+<Layout>
+  <main class="mx-auto max-w-5xl px-4 py-8" aria-labelledby="parent-dashboard-heading">
+    <h1 id="parent-dashboard-heading" class="text-2xl font-semibold mb-6">Panel rodzica</h1>
+    <ParentDashboardPage client:load />
+  </main>
+</Layout>

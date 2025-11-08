@@ -6,37 +6,145 @@ KidsEnroll (MVP) zapewnia dwa główne konteksty aplikacyjne oparte o role: Pane
 
 ## 2. Lista widoków
 
-Każdy widok opisany wg schematu: Nazwa | Ścieżka | Cel | Kluczowe informacje | Kluczowe komponenty | Uwagi UX / A11y / Security.
-
 ### 2.1. Strony publiczne / auth
-1. Strona startowa (landing minimalny) | `/` | Wejście do aplikacji, CTA do logowania/rejestracji | Logo, krótki opis, przyciski "Zaloguj", "Zarejestruj" | Static Astro, Button | Minimalizm; linki dostępne klawiaturą; brak wrażliwych danych.
-2. Rejestracja | `/register` | Utworzenie konta rodzica | Formularz: email, hasło; komunikaty błędów | Card, Form, Input (email/password), Alert (błędy), Button | Walidacja siły hasła (min 8), focus management po błędzie, blokada wielokrotnego submitu.
-3. Logowanie | `/login` | Uwierzytelnienie (rodzic/admin) | Formularz: email, hasło; przekierowanie wg roli | Card, Form, Alert (błędy), Button | Maskowanie hasła, brak enumeracji kont, generyczne komunikaty przy błędach.
+1. **Strona startowa (landing minimalny)**
+- **Ścieżka**: `/`
+- **Cel**: Wejście do aplikacji, CTA do logowania/rejestracji
+- **Kluczowe informacje**: Logo, krótki opis, przyciski "Zaloguj", "Zarejestruj"
+- **Kluczowe komponenty**: Static Astro, Button
+- **Uwagi UX / A11y / Security**: Minimalizm; linki dostępne klawiaturą; brak wrażliwych danych.
+2. **Rejestracja**
+- **Ścieżka**: `/register`
+- **Cel**: Utworzenie konta rodzica
+- **Kluczowe informacje**: Formularz: email, hasło; komunikaty błędów
+- **Kluczowe komponenty**: Card, Form, Input (email/password), Alert (błędy), Button
+- **Uwagi UX / A11y / Security**: Walidacja siły hasła (min 8), focus management po błędzie, blokada wielokrotnego submitu.
+3. **Logowanie**
+- **Ścieżka**: `/login`
+- **Cel**: Uwierzytelnienie (rodzic/admin)
+- **Kluczowe informacje**: Formularz: email, hasło; przekierowanie wg roli
+- **Kluczowe komponenty**: Card, Form, Alert (błędy), Button
+- **Uwagi UX / A11y / Security**: Maskowanie hasła, brak enumeracji kont, generyczne komunikaty przy błędach.
 
 ### 2.2. Panel Rodzica
-4. Dashboard Rodzica | `/app/dashboard` | Centralny widok: lista dzieci + ich zapisy | Lista dzieci (accordion), stany zapisów, przycisk generowania raportu, przycisk dodania dziecka (jeśli >0 dzieci też dostępny) | Accordion (lazy), Spinner, EnrollmentItem, Button, Toast | Lazy load enrollments on expand; aria-controls/aria-expanded; ograniczenia dostępu gdy brak dzieci (onboarding soft gate).
-5. Dodaj dziecko | `/app/dzieci/dodaj` (również redirect po rejestracji) | Wymuszenie utworzenia co najmniej jednego dziecka | Formularz: imię, nazwisko, data urodzenia, opis (opcjonalny) | Form, Input, DatePicker, Textarea, Alert (błędy), Button | Walidacja daty (nie w przyszłości); po sukcesie redirect do dashboard; brak nawigacji do innych sekcji przed ukończeniem.
-7. Edycja dziecka | `/app/dzieci/:id/edit` | Korekta danych profilu dziecka | Dane dziecka, formularz edycji | SSR fetch + Form, Inputs, DatePicker, Alert, Button | Sprawdzenie właścicielstwa dziecka (403 jeśli nie należy do rodzica).
-8. Lista zajęć (rodzic) | `/app/zajecia` | Przegląd dostępnych zajęć | Tabela: nazwa, opis, opiekun, data/godzina, koszt, wolne miejsca, tagi, akcja Zapisz (lub zablokowana) | DataTable, Badge (tagi), Button (Zapisz), Dialog (wybór dziecka), Skeleton, Toast | Pełny opis w kolumnie; disabled button jeśli brak miejsc; komunikat "Brak dostępnych zajęć" przy pustej liście.
-9. Dialog zapisu na zajęcia | (modal, bez własnej trasy – inicjowany z 8) | Wybór dziecka i potwierdzenie zapisu | Lista dzieci (radio/select), streszczenie zajęć, przycisk Potwierdź | Dialog, RadioGroup / Select, Button, Alert (błędy), Toast | Focus trap; ESC close
-10. Wypisanie z zajęć (potwierdzenie) | (AlertDialog - akcja z dashboardu) | Potwierdzenie akcji destrukcyjnej | Nazwa zajęć, dziecko, reguła 24h | AlertDialog, Button (destructive) | Blokada przy <24h (przycisk disabled + tooltip wyjaśniający).
-11. Raport kosztów tygodniowych | (akcja z dashboardu) | Generacja i pobranie pliku XLSX | Spinner podczas generacji, toast po sukcesie | Button, Toast, Loading overlay | Obsługa błędów (Toast); poprawna nazwa pliku; guard brak dzieci/zajęć.
-12. Profil rodzica | `/app/profil` | Edycja danych profilu (imię/nazwisko) | Formularz z prefill | Form, Input, Alert, Button, Toast | SSR prefetch; ochronić email przed edycją.
+4. **Dashboard Rodzica**
+- **Ścieżka**: `/app/dashboard`
+- **Cel**: Centralny widok: lista dzieci + ich zapisy
+- **Kluczowe informacje**: Lista dzieci (accordion), stany zapisów, przycisk generowania raportu, przycisk dodania dziecka (jeśli >0 dzieci też dostępny)
+- **Kluczowe komponenty**: Accordion (lazy), Spinner, EnrollmentItem, Button, Toast
+- **Uwagi UX / A11y / Security**: Lazy load enrollments on expand; aria-controls/aria-expanded; ograniczenia dostępu gdy brak dzieci (onboarding soft gate).
+5. **Dodaj dziecko**
+- **Ścieżka**: `/app/dzieci/dodaj` (również redirect po rejestracji)
+- **Cel**: Wymuszenie utworzenia co najmniej jednego dziecka
+- **Kluczowe informacje**: Formularz: imię, nazwisko, data urodzenia, opis (opcjonalny)
+- **Kluczowe komponenty**: Form, Input, DatePicker, Textarea, Alert (błędy), Button
+- **Uwagi UX / A11y / Security**: Walidacja daty (nie w przyszłości); po sukcesie redirect do dashboard; brak nawigacji do innych sekcji przed ukończeniem.
+7. **Edycja dziecka**
+- **Ścieżka**: `/app/dzieci/:id/edit`
+- **Cel**: Korekta danych profilu dziecka
+- **Kluczowe informacje**: Dane dziecka, formularz edycji
+- **Kluczowe komponenty**: SSR fetch + Form, Inputs, DatePicker, Alert, Button
+- **Uwagi UX / A11y / Security**: Sprawdzenie właścicielstwa dziecka (403 jeśli nie należy do rodzica).
+8. **Lista zajęć (rodzic)**
+- **Ścieżka**: `/app/zajecia`
+- **Cel**: Przegląd dostępnych zajęć
+- **Kluczowe informacje**: Tabela: nazwa, opis, opiekun, data/godzina, koszt, wolne miejsca, tagi, akcja Zapisz (lub zablokowana)
+- **Kluczowe komponenty**: DataTable, Badge (tagi), Button (Zapisz), Dialog (wybór dziecka), Skeleton, Toast
+- **Uwagi UX / A11y / Security**: Pełny opis w kolumnie; disabled button jeśli brak miejsc; komunikat "Brak dostępnych zajęć" przy pustej liście.
+9. **Dialog zapisu na zajęcia**
+- **Ścieżka**: (modal, bez własnej trasy – inicjowany z 8)
+- **Cel**: Wybór dziecka i potwierdzenie zapisu
+- **Kluczowe informacje**: Lista dzieci (radio/select), streszczenie zajęć, przycisk Potwierdź
+- **Kluczowe komponenty**: Dialog, RadioGroup / Select, Button, Alert (błędy), Toast
+- **Uwagi UX / A11y / Security**: Focus trap; ESC close
+10. **Wypisanie z zajęć (potwierdzenie)**
+- **Ścieżka**: (AlertDialog - akcja z dashboardu)
+- **Cel**: Potwierdzenie akcji destrukcyjnej
+- **Kluczowe informacje**: Nazwa zajęć, dziecko, reguła 24h
+- **Kluczowe komponenty**: AlertDialog, Button (destructive)
+- **Uwagi UX / A11y / Security**: Blokada przy <24h (przycisk disabled + tooltip wyjaśniający).
+11. **Raport kosztów tygodniowych**
+- **Ścieżka**: (akcja z dashboardu)
+- **Cel**: Generacja i pobranie pliku XLSX
+- **Kluczowe informacje**: Spinner podczas generacji, toast po sukcesie
+- **Kluczowe komponenty**: Button, Toast, Loading overlay
+- **Uwagi UX / A11y / Security**: Obsługa błędów (Toast); poprawna nazwa pliku; guard brak dzieci/zajęć.
+12. **Profil rodzica**
+- **Ścieżka**: `/app/profil`
+- **Cel**: Edycja danych profilu (imię/nazwisko)
+- **Kluczowe informacje**: Formularz z prefill
+- **Kluczowe komponenty**: Form, Input, Alert, Button, Toast
+- **Uwagi UX / A11y / Security**: SSR prefetch; ochronić email przed edycją.
 
 ### 2.3. Panel Administratora
-13. Redirect startowy admina | `/admin` | Przekierowanie do listy zajęć | (Brak UI) | 302 redirect | Minimalny.
-14. Lista zajęć (admin) | `/admin/activities` | Zarządzanie zajęciami | Tabela: nazwa, tagi, opiekun, data/godzina, limit, wolne miejsca, koszt, akcje (Edytuj/Usuń) | DataTable (server pagination+search), Badge, Button (link), AlertDialog (Usuń), Skeleton, Toast | Parametry page/search w query; potwierdzenie usunięcia wraz z infomacją o mock powiadomieniach - Toast; obsługa pustej listy (pusta tabela).
-15. Dodawanie zajęć | `/admin/activities/new` | Utworzenie nowej aktywności | Formularz: nazwa, opis, koszt, limit, data/godzina (UTC konwersja), wybór opiekuna, tagi | SSR fetch workers + tags; Form, Input, Textarea, NumberInput, DateTimePicker, Select (workers), MultiSelect/ComboBox (tags), Alert, Button, Toast | Walidacja przyszłej daty; maks. liczby znaków; tagi pobierane z backendowego endpointu GET `/admin/tags`.
-16. Edycja zajęć | `/admin/activities/:id/edit` | Aktualizacja istniejącej aktywności | Prefill danych + formularz jak w (15) | SSR fetch activity + workers + tags; Form itd. | -
-17. Lista opiekunów | `/admin/workers` | Przegląd opiekunów | Tabela: imię, nazwisko, email; brak paginacji | DataTable (client load once), Button (Dodaj, Usuń), Toast | Spójne kolumny; brak paginacji; powiadomienie o niemożliwości usunięcia opiekuna.
-18. Dodawanie opiekuna | `/admin/workers/new` | Utworzenie nowego opiekuna | Formularz: imię, nazwisko, email | Form, Input, Alert, Button, Toast | Walidacja unikalności email po stronie API; po sukcesie redirect do listy.
-19. Edycja opiekuna | `/admin/workers/:id/edit` | Aktualizacja danych opiekuna | Prefill danych + formularz | SSR fetch worker; Form, Input, Alert, Button, Toast | -
-20. Lista rodziców | `/admin/parents` | Przegląd kont rodziców | Tabela z paginacją/ wyszukiwaniem (email, imię, nazwisko), akcja Usuń | DataTable (server pagination+search), AlertDialog (potwierdzenie), Toast | Potwierdzenie skutków kaskadowych (tekst w dialogu); brak edycji.
-21. Szczegóły rodzica | `/admin/parents/:id` | Wgląd w dane rodzica i jego dzieci | Dane profilu, lista dzieci (z podstawowymi parametrami) | SSR fetch; Card sekcje, List, Button (powrót) | 404 gdy brak; ochrona administracyjna.
+13. **Redirect startowy admina**
+- **Ścieżka**: `/admin`
+- **Cel**: Przekierowanie do listy zajęć
+- **Kluczowe informacje**: (Brak UI)
+- **Kluczowe komponenty**: 302 redirect
+- **Uwagi UX / A11y / Security**: Minimalny.
+14. **Lista zajęć (admin)**
+- **Ścieżka**: `/admin/activities`
+- **Cel**: Zarządzanie zajęciami
+- **Kluczowe informacje**: Tabela: nazwa, tagi, opiekun, data/godzina, limit, wolne miejsca, koszt, akcje (Edytuj/Usuń)
+- **Kluczowe komponenty**: DataTable (server pagination+search), Badge, Button (link), AlertDialog (Usuń), Skeleton, Toast
+- **Uwagi UX / A11y / Security**: Parametry page/search w query; potwierdzenie usunięcia wraz z infomacją o mock powiadomieniach - Toast; obsługa pustej listy (pusta tabela).
+15. **Dodawanie zajęć**
+- **Ścieżka**: `/admin/activities/new`
+- **Cel**: Utworzenie nowej aktywności
+- **Kluczowe informacje**: Formularz: nazwa, opis, koszt, limit, data/godzina (UTC konwersja), wybór opiekuna, tagi
+- **Kluczowe komponenty**: SSR fetch workers + tags; Form, Input, Textarea, NumberInput, DateTimePicker, Select (workers), MultiSelect/ComboBox (tags), Alert, Button, Toast
+- **Uwagi UX / A11y / Security**: Walidacja przyszłej daty; maks. liczby znaków; tagi pobierane z backendowego endpointu GET `/admin/tags`.
+16. **Edycja zajęć**
+- **Ścieżka**: `/admin/activities/:id/edit`
+- **Cel**: Aktualizacja istniejącej aktywności
+- **Kluczowe informacje**: Prefill danych + formularz jak w (15)
+- **Kluczowe komponenty**: SSR fetch activity + workers + tags; Form itd.
+- **Uwagi UX / A11y / Security**: -
+17. **Lista opiekunów**
+- **Ścieżka**: `/admin/workers`
+- **Cel**: Przegląd opiekunów
+- **Kluczowe informacje**: Tabela: imię, nazwisko, email; brak paginacji
+- **Kluczowe komponenty**: DataTable (client load once), Button (Dodaj, Usuń), Toast
+- **Uwagi UX / A11y / Security**: Spójne kolumny; brak paginacji; powiadomienie o niemożliwości usunięcia opiekuna.
+18. **Dodawanie opiekuna**
+- **Ścieżka**: `/admin/workers/new`
+- **Cel**: Utworzenie nowego opiekuna
+- **Kluczowe informacje**: Formularz: imię, nazwisko, email
+- **Kluczowe komponenty**: Form, Input, Alert, Button, Toast
+- **Uwagi UX / A11y / Security**: Walidacja unikalności email po stronie API; po sukcesie redirect do listy.
+19. **Edycja opiekuna**
+- **Ścieżka**: `/admin/workers/:id/edit`
+- **Cel**: Aktualizacja danych opiekuna
+- **Kluczowe informacje**: Prefill danych + formularz
+- **Kluczowe komponenty**: SSR fetch worker; Form, Input, Alert, Button, Toast
+- **Uwagi UX / A11y / Security**: -
+20. **Lista rodziców**
+- **Ścieżka**: `/admin/parents`
+- **Cel**: Przegląd kont rodziców
+- **Kluczowe informacje**: Tabela z paginacją/ wyszukiwaniem (email, imię, nazwisko), akcja Usuń
+- **Kluczowe komponenty**: DataTable (server pagination+search), AlertDialog (potwierdzenie), Toast
+- **Uwagi UX / A11y / Security**: Potwierdzenie skutków kaskadowych (tekst w dialogu); brak edycji.
+21. **Szczegóły rodzica**
+- **Ścieżka**: `/admin/parents/:id`
+- **Cel**: Wgląd w dane rodzica i jego dzieci
+- **Kluczowe informacje**: Dane profilu, lista dzieci (z podstawowymi parametrami)
+- **Kluczowe komponenty**: SSR fetch; Card sekcje, List, Button (powrót)
+- **Uwagi UX / A11y / Security**: 404 gdy brak; ochrona administracyjna.
 
 ### 2.4. Wspólne / systemowe
-22. Błędy globalne | `/error/401`, `/error/403`, `/error/404`, `/error/500` (lub jeden dynamiczny) | Czytelne komunikaty błędów | Kod, opis, CTA (powrót / logowanie) | Static Astro, Button | Dostępność: nagłówek h1 z kodem i opisem.
-23. Wylogowanie | `/logout` (akcja) | Inicjuje zakończenie sesji i redirect do `/` | (Brak UI) | Action + redirect | CSRF safe (cookie based) – w MVP minimalnie.
+22. **Błędy globalne**
+- **Ścieżka**: `/error/401`, `/error/403`, `/error/404`, `/error/500` (lub jeden dynamiczny)
+- **Cel**: Czytelne komunikaty błędów
+- **Kluczowe informacje**: Kod, opis, CTA (powrót / logowanie)
+- **Kluczowe komponenty**: Static Astro, Button
+- **Uwagi UX / A11y / Security**: Dostępność: nagłówek h1 z kodem i opisem.
+23. **Wylogowanie**
+- **Ścieżka**: `/logout` (akcja)
+- **Cel**: Inicjuje zakończenie sesji i redirect do `/`
+- **Kluczowe informacje**: (Brak UI)
+- **Kluczowe komponenty**: Action + redirect
+- **Uwagi UX / A11y / Security**: CSRF safe (cookie based) – w MVP minimalnie.
 
 ## 3. Mapa podróży użytkownika
 
