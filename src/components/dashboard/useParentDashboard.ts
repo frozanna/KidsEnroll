@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 import { formatUtcToLocal, joinFullName } from "../../lib/utils";
-import { useToastFeedback } from "./useToastFeedback";
+import { useToastFeedback } from "../useToastFeedback";
 import type { DashboardState, EnrollmentViewModel } from "./types";
 import { useChildren } from "./useChildren";
 

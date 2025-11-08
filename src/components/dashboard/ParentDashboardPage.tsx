@@ -4,7 +4,7 @@ import { ChildrenAccordion } from "./ChildrenAccordion";
 import { ActionsBar } from "./actions/ActionsBar";
 import { EmptyChildrenState } from "./EmptyChildrenState";
 import { LoadingSpinner } from "./LoadingSpinner";
-import { useToastFeedback } from "./useToastFeedback";
+import { useToastFeedback } from "../useToastFeedback";
 
 // Root component orchestrating parent dashboard state.
 const ParentDashboardPage: React.FC = () => {

@@ -1,11 +1,12 @@
 ---
 import "../styles/global.css";
+import Toaster from "../components/ui/toaster-wrapper";
 
 interface Props {
   title?: string;
 }
 
-const { title = "10x Astro Starter" } = Astro.props;
+const { title = "KidsEnroll" } = Astro.props;
 ---
 
 <!doctype html>
@@ -19,6 +20,8 @@ const { title = "10x Astro Starter" } = Astro.props;
   </head>
   <body>
     <slot />
+    {/** Toast portal (React) */}
+    <Toaster client:load />
   </body>
 </html>
 
