@@ -97,6 +97,7 @@ export const GET: APIRoute = async (context) => {
         parent_id: profile.id,
         child_id: childId,
         error_code: apiErr.code,
+        error_details: apiErr.details,
         status: apiErr.status,
         timestamp: new Date().toISOString(),
       })
@@ -209,6 +210,7 @@ export const PATCH: APIRoute = async (context) => {
         parent_id: profile.id,
         child_id: childId,
         error_code: apiErr.code,
+        error_details: apiErr.details,
         status: apiErr.status,
         timestamp: new Date().toISOString(),
       })

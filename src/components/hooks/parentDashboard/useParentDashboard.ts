@@ -113,8 +113,23 @@ export function useParentDashboard() {
     try {
       const res = await fetch("/api/reports/costs");
       if (!res.ok) throw new Error("Nie udało się wygenerować raportu");
-      toast.success("Raport wygenerowany");
-      // Future: parse and download or display.
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const disposition = res.headers.get("Content-Disposition") || "";
+      const match = disposition.match(/filename="(.+?)"/i);
+      const filename = match?.[1] ?? "raport-tygodniowy.xlsx";
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+
+      toast.success("Raport wygenerowany i pobrany");
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Nieznany błąd";
       setReportError(msg);

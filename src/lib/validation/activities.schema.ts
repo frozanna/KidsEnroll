@@ -29,7 +29,9 @@ export interface ActivitiesQueryFilters {
 
 // ---- Helpers ----
 const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
-const TAG_REGEX = /^[A-Za-z0-9\-_/]{1,50}$/; // length check combined
+// Allow ASCII alphanumerics, dash, underscore, slash, and Polish diacritics (upper/lowercase)
+// Note: spaces are still disallowed; use hyphens for multi-word tags.
+const TAG_REGEX = /^[A-Za-z0-9\-_/ĄĆĘŁŃÓŚŹŻąćęłńóśźż]{1,50}$/u; // length check combined
 
 function isValidIsoDateOnly(value: string): boolean {
   if (!DATE_REGEX.test(value)) return false;
@@ -154,7 +156,7 @@ export function validateActivitiesQuery(params: URLSearchParams): ActivitiesQuer
             {
               code: z.ZodIssueCode.custom,
               path: ["tags"],
-              message: `Invalid tag '${tag}' (allowed: alphanumeric - _ /, max 50 chars)`,
+              message: `Invalid tag '${tag}' (allowed: alphanumeric (incl. Polish ĄĆĘŁŃÓŚŹŻ/ąćęłńóśźż) and - _ /, max 50 chars)`,
             },
           ]);
         }

@@ -25,22 +25,26 @@ import { createError } from "./errors";
  * @param supabase - contextual Supabase client
  * @param parentId - authenticated parent profile id
  * @param weekStart - Monday YYYY-MM-DD
+ * @param weekEnd - Sunday YYYY-MM-DD (same ISO format)
  * @returns WeeklyCostReportDTO
  */
 export async function generateWeeklyCostReport(
   supabase: SupabaseClient,
   parentId: string,
-  weekStart: string
+  weekStart: string,
+  weekEnd: string
 ): Promise<WeeklyCostReportDTO> {
-  // Compute week end (Monday + 6d) and bound datetimes
+  // Compute bound datetimes based on provided weekStart/weekEnd
   const startDate = new Date(weekStart + "T00:00:00Z");
   if (Number.isNaN(startDate.getTime())) {
     throw createError("INTERNAL_ERROR", "Invalid weekStart date format");
   }
-  const endDate = new Date(startDate.getTime() + 6 * 24 * 60 * 60 * 1000);
-  const weekEnd = formatDateUtc(endDate);
-  const rangeStartIso = startDate.toISOString(); // inclusive
-  const nextWeekStart = new Date(startDate.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString(); // exclusive upper bound
+  const endDate = new Date(weekEnd + "T23:59:59Z");
+  if (Number.isNaN(endDate.getTime())) {
+    throw createError("INTERNAL_ERROR", "Invalid weekEnd date format");
+  }
+  const weekStartIso = startDate.toISOString(); // inclusive
+  const nextWeekStartIso = new Date(endDate.getTime() + 1000).toISOString(); // exclusive upper bound (end of day weekEnd)
 
   // ---- Fetch children ----
   const { data: childrenRows, error: childrenError } = await supabase
@@ -60,8 +64,8 @@ export async function generateWeeklyCostReport(
     .from("enrollments")
     .select("child_id, activity_id, activities(name, cost, start_datetime), children(first_name, last_name)")
     .in("child_id", childIds)
-    .gte("activities.start_datetime", rangeStartIso)
-    .lt("activities.start_datetime", nextWeekStart);
+    .gte("activities.start_datetime", weekStartIso)
+    .lt("activities.start_datetime", nextWeekStartIso);
   if (enrollError) throw createError("INTERNAL_ERROR", enrollError.message);
 
   interface RawEnrollmentRow {
@@ -74,8 +78,11 @@ export async function generateWeeklyCostReport(
 
   const rows: WeeklyCostReportRowDTO[] = [];
   for (const r of typed) {
-    if (!r.activities || !r.children) {
-      throw createError("INTERNAL_ERROR", "Missing nested activity or child data in enrollment row");
+    if (!r.children) {
+      throw createError("INTERNAL_ERROR", "Missing nested child data in enrollment row");
+    }
+    if (!r.activities) {
+      continue; // No activity in current week range
     }
     const { start_datetime } = r.activities;
     const ms = new Date(start_datetime).getTime();
@@ -96,6 +103,10 @@ export async function generateWeeklyCostReport(
       activity_time: timePart,
       cost: r.activities.cost,
     });
+  }
+
+  if (rows.length === 0) {
+    return emptyReport(weekStart, weekEnd);
   }
 
   // ---- Sort rows (date asc, then time asc, then child last name for stability) ----
@@ -121,11 +132,4 @@ export async function generateWeeklyCostReport(
 
 function emptyReport(weekStart: string, weekEnd: string): WeeklyCostReportDTO {
   return { rows: [], total: 0, week_start: weekStart, week_end: weekEnd };
-}
-
-function formatDateUtc(d: Date): string {
-  const y = d.getUTCFullYear();
-  const m = String(d.getUTCMonth() + 1).padStart(2, "0");
-  const day = String(d.getUTCDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
 }

@@ -52,6 +52,7 @@ export const GET: APIRoute = async (context) => {
           phase: "error",
           parent_id: profile.id,
           error_code: apiErr.code,
+          error_details: apiErr.details,
           status: apiErr.status,
           timestamp: new Date().toISOString(),
         })
@@ -66,6 +67,7 @@ export const GET: APIRoute = async (context) => {
         phase: "error",
         parent_id: profile.id,
         error_code: apiErr.code,
+        error_details: apiErr.details,
         status: apiErr.status,
         timestamp: new Date().toISOString(),
       })
@@ -89,7 +91,7 @@ export const GET: APIRoute = async (context) => {
   // --- Generate DTO ---
   let dto: WeeklyCostReportDTO;
   try {
-    dto = await generateWeeklyCostReport(supabase, profile.id, week.weekStart);
+    dto = await generateWeeklyCostReport(supabase, profile.id, week.weekStart, week.weekEnd);
   } catch (err) {
     const apiErr = normalizeUnknownError(err);
     // eslint-disable-next-line no-console
@@ -101,6 +103,7 @@ export const GET: APIRoute = async (context) => {
         week_start: week.weekStart,
         week_end: week.weekEnd,
         error_code: apiErr.code,
+        error_details: apiErr.details,
         status: apiErr.status,
         timestamp: new Date().toISOString(),
       })
@@ -166,6 +169,7 @@ export const GET: APIRoute = async (context) => {
         week_start: week.weekStart,
         week_end: week.weekEnd,
         error_code: apiErr.code,
+        error_details: apiErr.details,
         status: apiErr.status,
         timestamp: new Date().toISOString(),
       })

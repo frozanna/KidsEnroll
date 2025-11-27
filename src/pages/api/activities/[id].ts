@@ -98,6 +98,7 @@ export const GET: APIRoute = async (context) => {
         parent_id: profile.id,
         activity_id: activityId,
         error_code: finalErr.code,
+        error_details: apiErr.details,
         status: finalErr.status,
         timestamp: new Date().toISOString(),
       })

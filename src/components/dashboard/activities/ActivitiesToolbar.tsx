@@ -68,8 +68,8 @@ export const ActivitiesToolbar: React.FC<ActivitiesToolbarProps> = ({ filters, o
           />
         </label>
         <label className="flex flex-col gap-1 text-sm sm:col-span-2">
-          <span className="font-medium">Tagi (comma separated)</span>
-          <input type="text" placeholder="sport, art" onChange={onTagsChange} className="rounded border px-2 py-1" />
+          <span className="font-medium">Tagi (oddziel przecinkami)</span>
+          <input type="text" placeholder="sport, muzyka" onChange={onTagsChange} className="rounded border px-2 py-1" />
           {filters.tags && filters.tags.length > 0 && (
             <div className="mt-1 flex flex-wrap gap-1" aria-label="Wybrane tagi">
               {filters.tags.map((t) => (
