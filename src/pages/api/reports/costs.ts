@@ -20,7 +20,7 @@ import { normalizeUnknownError, fromZodError } from "../../../lib/services/error
 import { validateWeeklyReportQuery } from "../../../lib/validation/reports.schema";
 import { generateWeeklyCostReport } from "../../../lib/services/reports.service";
 import type { WeeklyCostReportDTO } from "../../../types";
-import { Workbook } from "exceljs";
+import ExcelJS from "exceljs";
 
 export const prerender = false; // API route
 
@@ -110,7 +110,7 @@ export const GET: APIRoute = async (context) => {
 
   // --- Build Excel workbook ---
   try {
-    const workbook = new Workbook();
+    const workbook = new ExcelJS.Workbook();
     const sheet = workbook.addWorksheet("WeeklyCosts");
     sheet.columns = [
       { header: "Imię dziecka", key: "child_first_name" },

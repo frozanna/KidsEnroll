@@ -10,10 +10,8 @@ import { useToastFeedback } from "../useToastFeedback";
 const ParentDashboardPage: React.FC = () => {
   const {
     state,
-    hasAnyEnrollments,
     toggleChildExpansion,
     isChildExpanded,
-    // isChildLoading, // kept in hook for future per-panel spinners
     fetchEnrollmentsLazy,
     navigateAddChild,
     generateReport,
@@ -54,9 +52,9 @@ const ParentDashboardPage: React.FC = () => {
         {state.loadingReport ? "Generowanie raportu" : ""}
       </div>
       <ActionsBar
-        onGenerateReport={generateReport}
         onAddChild={navigateAddChild}
-        disabledReport={!hasAnyEnrollments || state.loadingReport}
+        onGenerateReport={generateReport}
+        disabledReport={state.loadingReport}
         loadingReport={state.loadingReport}
       />
       <ChildrenAccordion

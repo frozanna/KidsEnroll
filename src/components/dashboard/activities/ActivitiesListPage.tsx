@@ -73,7 +73,7 @@ export const ActivitiesListPage: React.FC = () => {
               }))
         }
         onClose={closeEnrollDialog}
-        onConfirm={onConfirmEnroll}
+        onSuccess={onConfirmEnroll}
       />
     </section>
   );

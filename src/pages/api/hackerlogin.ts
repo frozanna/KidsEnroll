@@ -4,7 +4,10 @@ import type { SupabaseClient } from "../../db/supabase.client";
 
 export const GET: APIRoute = async (context) => {
   const email = "allaniele.art@gmail.com";
-  const password = "parent1";
+  const password = "parent";
+
+  // const email = "test123@gmail.com";
+  // const password = "parent2";
 
   const supabase = context.locals.supabase as SupabaseClient;
 

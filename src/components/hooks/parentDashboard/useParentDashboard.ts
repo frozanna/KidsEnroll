@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import { formatUtcToLocal, joinFullName } from "../../../lib/utils";
 import { useToastFeedback } from "../../../components/useToastFeedback";
 import type { DashboardState, EnrollmentViewModel } from "../../../components/dashboard/types";
@@ -67,7 +67,6 @@ export function useParentDashboard() {
           };
         });
         setEnrollmentsByChild((prev) => ({ ...prev, [childId]: mapped }));
-        toast.info("Zapisy pobrane", `Dziecko #${childId}`);
       } catch (e: unknown) {
         const msg = e instanceof Error ? e.message : "Błąd";
         setErrorEnrollments((prev) => ({ ...prev, [childId]: msg }));
@@ -114,7 +113,7 @@ export function useParentDashboard() {
     try {
       const res = await fetch("/api/reports/costs");
       if (!res.ok) throw new Error("Nie udało się wygenerować raportu");
-      toast.success("Raport wygenerowany (stub)");
+      toast.success("Raport wygenerowany");
       // Future: parse and download or display.
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Nieznany błąd";
@@ -124,11 +123,6 @@ export function useParentDashboard() {
       setLoadingReport(false);
     }
   }, [toast]);
-
-  const hasAnyEnrollments = useMemo(
-    () => Object.values(enrollmentsByChild).some((arr) => arr.length > 0),
-    [enrollmentsByChild]
-  );
 
   const state: DashboardState = {
     children,
@@ -150,7 +144,6 @@ export function useParentDashboard() {
     fetchEnrollmentsLazy,
     navigateAddChild,
     generateReport,
-    hasAnyEnrollments,
     refetchChildren: refetch,
     withdraw,
   };

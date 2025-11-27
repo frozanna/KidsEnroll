@@ -42,6 +42,24 @@ interface RawActivityRow {
   } | null;
 }
 
+interface EnrollmentCountRow {
+  activity_id: number;
+  enrollment_count: number;
+}
+
+async function rpcEnrollmentCounts(supabase: SupabaseClient, ids: number[]): Promise<Map<number, number>> {
+  const { data, error } = await supabase.rpc("get_enrollment_counts", {
+    activity_ids: ids,
+  });
+  if (error) throw createError("INTERNAL_ERROR", error.message);
+  const map = new Map<number, number>();
+  for (const r of (data as EnrollmentCountRow[] | null) ?? []) {
+    map.set(r.activity_id, Number(r.enrollment_count) || 0);
+  }
+  for (const id of ids) if (!map.has(id)) map.set(id, 0);
+  return map;
+}
+
 /**
  * Lists activities with derived fields & pagination.
  * @param supabase - Supabase client bound to request context
@@ -104,17 +122,8 @@ export async function listActivities(
   // Ensure all activities have an entry
   for (const id of activityIds) if (!tagsMap.has(id)) tagsMap.set(id, []);
 
-  // ---- Enrollment counts ----
-  const { data: enrollmentRows, error: enrollError } = await supabase
-    .from("enrollments")
-    .select("activity_id")
-    .in("activity_id", activityIds);
-  if (enrollError) throw createError("INTERNAL_ERROR", enrollError.message);
-  const enrollmentCountMap = new Map<number, number>();
-  for (const r of enrollmentRows ?? []) {
-    enrollmentCountMap.set(r.activity_id, (enrollmentCountMap.get(r.activity_id) || 0) + 1);
-  }
-  for (const id of activityIds) if (!enrollmentCountMap.has(id)) enrollmentCountMap.set(id, 0);
+  // ---- Enrollment counts (RPC bypassing RLS for accurate totals) ----
+  const enrollmentCountMap = await rpcEnrollmentCounts(supabase, activityIds);
 
   // ---- Transform to DTO ----
   const list: ActivityListItemDTO[] = activities.map((row) => {
@@ -188,13 +197,9 @@ export async function getActivityById(supabase: SupabaseClient, id: number): Pro
   if (tagsError) throw createError("INTERNAL_ERROR", tagsError.message);
   const tags = (tagRows ?? []).map((t) => t.tag);
 
-  // ---- Enrollment count (HEAD count) ----
-  const { count: enrollmentCount, error: enrollError } = await supabase
-    .from("enrollments")
-    .select("child_id", { count: "exact", head: true })
-    .eq("activity_id", id);
-  if (enrollError) throw createError("INTERNAL_ERROR", enrollError.message);
-  const currentEnrollments = enrollmentCount ?? 0;
+  // ---- Enrollment count (RPC for accurate total) ----
+  const singleMap = await rpcEnrollmentCounts(supabase, [id]);
+  const currentEnrollments = singleMap.get(id) ?? 0;
   const available_spots = Math.max(0, row.participant_limit - currentEnrollments);
 
   // ---- Worker subset (defense-in-depth fallbacks) ----

@@ -1,7 +1,7 @@
 import React from "react";
 import { AddChildButton } from "./AddChildButton";
 import { ReportButton } from "./ReportButton";
-import { EnrollActivityButton } from "./EnrollActivityButton.tsx";
+import { EnrollActivityButton } from "./EnrollActivityButton";
 
 interface ActionsBarProps {
   onGenerateReport: () => void;
@@ -12,8 +12,8 @@ interface ActionsBarProps {
 }
 
 export const ActionsBar: React.FC<ActionsBarProps> = ({
-  onGenerateReport,
   onAddChild,
+  onGenerateReport,
   onNavigateActivities,
   disabledReport,
   loadingReport,
@@ -21,8 +21,8 @@ export const ActionsBar: React.FC<ActionsBarProps> = ({
   return (
     <div className="flex flex-wrap items-center gap-3 mb-2" aria-label="Akcje główne">
       <EnrollActivityButton onNavigate={onNavigateActivities} />
-      <ReportButton onGenerate={onGenerateReport} disabled={disabledReport} loading={loadingReport} />
       <AddChildButton onAdd={onAddChild} />
+      <ReportButton onGenerate={onGenerateReport} disabled={disabledReport} loading={loadingReport} />
     </div>
   );
 };

@@ -182,14 +182,4 @@ Mechanika: ustawienie `error` + rola alert + przywrócenie focusu do alertu. Po 
 8. Dodać toast sukcesu (wykorzystać istniejący `useToastFeedback` lub `toast` hook).
 9. W rodzicu (np. ActivitiesListPage) dodać callback `handleEnrollmentSuccess` odświeżający listę aktywności/enrollmentów (np. refetch lub optimistic update: zmniejszenie `available_spots`).
 10. Upewnić się, że zamknięcie dialogu resetuje stan (useEffect watch `open`).
-11. Testy manualne A11y: Tab order, ESC, SR (nagłówki, role, alert), brak focus escape.
-12. (Opcjonalne) Napisać testy jednostkowe (React Testing Library): 
-    - Render przy `open=false` → nic.
-    - Wybór dziecka aktywuje przycisk.
-    - Symulacja sukcesu → onSuccess wywołany.
-    - Symulacja błędu 400 full → pokazuje komunikat.
-13. Dokumentacja krótkiego użycia w README sekcji developerskiej / komentarz w pliku.
 14. (Po instalacji shadcn Dialog) Refaktor: podmienić strukturę na `<Dialog>` + `<DialogContent>` itd.
-
----
-Plan gotowy do implementacji; uwzględnia prostą ścieżkę MVP oraz możliwość późniejszego refaktoru do komponentów shadcn/ui bez zmiany kontraktów zewnętrznych.

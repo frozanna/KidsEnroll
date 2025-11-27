@@ -1,7 +1,7 @@
 // Local types for Activities list view (frontend mapping layer)
 // Some overlap with backend DTOs in src/types.ts; we create a focused set for UI concerns.
 
-import type { ActivitiesListResponseDTO, ActivityDTO } from "../../../types";
+import type { ActivitiesListResponseDTO, ActivityDTO, CreateEnrollmentResponseDTO } from "../../../types";
 
 export interface ActivityViewModel {
   id: number;
@@ -47,6 +47,36 @@ export interface ChildSummary {
   id: number;
   first_name: string;
   last_name: string;
+}
+
+// --- Enrollment specific local types (dialog scope) ---
+// Request payload matches backend contract (POST /api/enrollments)
+export interface EnrollmentRequestPayload {
+  child_id: number;
+  activity_id: number;
+}
+
+// Canonical error kinds mapped from API error codes / HTTP statuses
+export type EnrollmentErrorKind =
+  | "ACTIVITY_FULL"
+  | "ALREADY_ENROLLED"
+  | "NOT_FOUND"
+  | "UNAUTHORIZED"
+  | "FORBIDDEN"
+  | "UNKNOWN";
+
+// Simplified API error adapter (subset of ErrorResponseDTO)
+export interface ApiErrorShape {
+  code: string;
+  message: string;
+}
+
+// Local dialog state snapshot (not all fields exposed via props)
+export interface EnrollDialogState {
+  selectedChildId?: number;
+  isSubmitting: boolean;
+  error?: (ApiErrorShape & { kind: EnrollmentErrorKind }) | null;
+  success?: CreateEnrollmentResponseDTO | null;
 }
 
 // Mapper from backend ActivityDTO to ActivityViewModel

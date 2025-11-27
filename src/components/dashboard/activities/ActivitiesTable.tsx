@@ -10,11 +10,11 @@ interface ActivitiesTableProps {
 
 export const ActivitiesTable: React.FC<ActivitiesTableProps> = ({ activities, onEnrollClick }) => {
   return (
-    <div className="w-full overflow-x-auto">
+    <div className="w-full overflow-x-auto p-4" aria-label="Sekcja tabeli z listą zajęć">
       <table className="w-full border-collapse" aria-label="Lista zajęć">
         <caption className="sr-only">Lista zajęć dostępnych do zapisania dziecka</caption>
         <thead>
-          <tr className="text-left border-b align-middle">
+          <tr className="text-left border-b align-middle bg-border/40">
             <th scope="col" className="py-2 pr-2">
               Nazwa
             </th>

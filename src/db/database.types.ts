@@ -242,7 +242,17 @@ export interface Database {
       };
     };
     Views: Record<never, never>;
-    Functions: Record<never, never>;
+    Functions: {
+      get_enrollment_counts: {
+        Args: {
+          activity_ids: number[];
+        };
+        Returns: {
+          activity_id: number;
+          enrollment_count: number;
+        }[];
+      };
+    };
     Enums: {
       user_role: "admin" | "parent";
     };
