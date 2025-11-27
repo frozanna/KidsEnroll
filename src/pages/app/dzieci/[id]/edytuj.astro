@@ -3,6 +3,7 @@ import Layout from "../../../../layouts/Layout.astro";
 import ChildForm from "../../../../components/children/ChildForm";
 import type { ChildDTO } from "../../../../types";
 import type { SupabaseClient } from "../../../../db/supabase.client";
+import ParentNavbar from "../../../../components/dashboard/ParentNavbar";
 
 export interface Props {
   child?: ChildDTO;
@@ -44,6 +45,7 @@ if (!supabase) {
 ---
 
 <Layout title={child ? `Edytuj: ${child.first_name}` : "Edytuj dziecko"}>
+  <ParentNavbar client:load activeTabLabel="Edytuj dziecko" />
   <main class="mx-auto max-w-xl p-6">
     <h1 class="text-2xl font-semibold mb-4">Edytuj dziecko</h1>
     {

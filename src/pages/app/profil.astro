@@ -1,0 +1,41 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { ParentProfileForm } from "../../components/dashboard/profile/ParentProfileForm";
+import type { ProfileDTO } from "../../types";
+import type { SupabaseClient } from "../../db/supabase.client";
+import { getCurrentProfile } from "../../lib/services/profile.service";
+import { normalizeUnknownError } from "../../lib/services/errors";
+import ParentNavbar from "../../components/dashboard/ParentNavbar";
+
+const supabase = Astro.locals.supabase as SupabaseClient;
+
+let profile: ProfileDTO | null = null;
+let loadError: { code: string; message: string } | null = null;
+
+try {
+  profile = await getCurrentProfile(supabase);
+} catch (err) {
+  const apiErr = normalizeUnknownError(err);
+  loadError = { code: apiErr.code, message: apiErr.message };
+}
+---
+
+<Layout title="Mój profil">
+  <ParentNavbar client:load activeTabLabel="Profil" />
+  <main class="mx-auto flex min-h-screen max-w-5xl flex-col px-4 py-8">
+    <section class="mx-auto w-full max-w-xl rounded-lg bg-card p-6 shadow-sm">
+      {
+        loadError && (
+          <div class="mb-4 rounded-md border border-red-300 bg-red-50 p-4 text-sm text-red-700">
+            <p class="font-semibold">Nie udało się załadować profilu.</p>
+            <p class="mt-1">{loadError.message}</p>
+          </div>
+        )
+      }
+
+      {profile && <ParentProfileForm client:load initialProfile={profile} />}
+
+      {!profile && !loadError && <p class="text-sm text-muted-foreground">Ładowanie profilu...</p>}
+    </section>
+  </main>
+</Layout>

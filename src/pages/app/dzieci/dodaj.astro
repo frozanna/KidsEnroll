@@ -1,6 +1,7 @@
 ---
 import Layout from "../../../layouts/Layout.astro";
 import ChildForm from "../../../components/children/ChildForm";
+import ParentNavbar from "../../../components/dashboard/ParentNavbar";
 
 // Add Child page (Create mode)
 // SSR wrapper: minimal logic (auth handled in middleware). Renders React form.
@@ -9,6 +10,7 @@ import ChildForm from "../../../components/children/ChildForm";
 ---
 
 <Layout title="Dodaj dziecko">
+  <ParentNavbar client:load activeTabLabel="Dodaj dziecko" />
   <main class="mx-auto max-w-xl p-6">
     <h1 class="text-2xl font-semibold mb-4">Dodaj dziecko</h1>
     <p class="text-sm text-neutral-600 mb-6">Uzupełnij dane dziecka aby móc zapisywać je na zajęcia.</p>

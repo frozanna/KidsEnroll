@@ -22,7 +22,7 @@ export const EnrollActivityButton: React.FC<EnrollActivityButtonProps> = ({ onNa
       size="lg"
       aria-label="Przejdź do listy zajęć, aby zapisać dziecko"
     >
-      Zapisz na aktywność
+      Zapisz na zajęcia
     </Button>
   );
 };
