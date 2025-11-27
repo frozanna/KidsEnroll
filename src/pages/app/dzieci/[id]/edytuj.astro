@@ -1,6 +1,6 @@
 ---
 import Layout from "../../../../layouts/Layout.astro";
-import ChildForm from "../../../../components/children/ChildForm";
+import ChildForm from "../../../../components/dashboard/children/ChildForm";
 import type { ChildDTO } from "../../../../types";
 import type { SupabaseClient } from "../../../../db/supabase.client";
 import ParentNavbar from "../../../../components/dashboard/ParentNavbar";
@@ -44,10 +44,10 @@ if (!supabase) {
 }
 ---
 
-<Layout title={child ? `Edytuj: ${child.first_name}` : "Edytuj dziecko"}>
+<Layout title={"Edytuj dziecko"}>
   <ParentNavbar client:load activeTabLabel="Edytuj dziecko" />
   <main class="mx-auto max-w-xl p-6">
-    <h1 class="text-2xl font-semibold mb-4">Edytuj dziecko</h1>
+    <h1 class="text-2xl font-semibold mb-4 flex justify-center">Edytuj dziecko</h1>
     {
       notFound && (
         <div role="alert" class="rounded border border-red-300 bg-red-50 p-3 text-sm text-red-700">

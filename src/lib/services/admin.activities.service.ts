@@ -96,6 +96,18 @@ async function selectActivityDto(supabase: SupabaseClient, id: number): Promise<
   return row;
 }
 
+// List all activities for admin (no pagination, MVP scope)
+export async function listAllActivities(supabase: SupabaseClient): Promise<AdminActivityDTO[]> {
+  const { data, error } = await supabase
+    .from("activities")
+    .select("id, name, description, cost, participant_limit, start_datetime, worker_id, facility_id, created_at")
+    .order("created_at", { ascending: false });
+  if (error) {
+    throw createError("INTERNAL_ERROR", error.message);
+  }
+  return (data ?? []) as AdminActivityDTO[];
+}
+
 export async function createActivity(
   supabase: SupabaseClient,
   command: AdminActivityCreateCommand

@@ -21,7 +21,7 @@ export const ReportButton: React.FC<ReportButtonProps> = ({ loading, disabled, o
       aria-busy={loading}
       aria-live="polite"
     >
-      {loading ? "Generowanie..." : "Raport tygodniowy"}
+      {loading ? "Generowanie..." : "Pobierz tygodniowy raport kosztów"}
     </Button>
   );
 };

@@ -22,20 +22,19 @@ try {
 
 <Layout title="Mój profil">
   <ParentNavbar client:load activeTabLabel="Profil" />
-  <main class="mx-auto flex min-h-screen max-w-5xl flex-col px-4 py-8">
-    <section class="mx-auto w-full max-w-xl rounded-lg bg-card p-6 shadow-sm">
-      {
-        loadError && (
-          <div class="mb-4 rounded-md border border-red-300 bg-red-50 p-4 text-sm text-red-700">
-            <p class="font-semibold">Nie udało się załadować profilu.</p>
-            <p class="mt-1">{loadError.message}</p>
-          </div>
-        )
-      }
+  <main class="mx-auto max-w-xl p-6">
+    <h1 class="text-2xl font-semibold mb-4 flex justify-center">Mój profil</h1>
+    {
+      loadError && (
+        <div class="rounded border border-red-300 bg-red-50 p-3 text-sm text-red-700" role="alert">
+          <p class="font-semibold">Nie udało się załadować profilu.</p>
+          <p class="mt-1">{loadError.message}</p>
+        </div>
+      )
+    }
 
-      {profile && <ParentProfileForm client:load initialProfile={profile} />}
+    {profile && <ParentProfileForm client:load initialProfile={profile} />}
 
-      {!profile && !loadError && <p class="text-sm text-muted-foreground">Ładowanie profilu...</p>}
-    </section>
+    {!profile && !loadError && <p class="text-sm text-muted-foreground">Ładowanie profilu...</p>}
   </main>
 </Layout>

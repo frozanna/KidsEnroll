@@ -30,7 +30,6 @@ export const ActivitiesListPage: React.FC = () => {
 
   return (
     <section role="main" className="space-y-4">
-      <h1 className="text-xl font-semibold">Lista zajęć</h1>
       <ActivitiesToolbar filters={state.filters} onFiltersChange={setFilters} onReset={resetFilters} />
       <div className="rounded-md border p-2">
         {state.loadState === "loading" && <LoadingSkeleton />}

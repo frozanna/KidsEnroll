@@ -18,7 +18,7 @@ import type { SupabaseClient } from "../../../db/supabase.client";
 import { authenticateAdmin, jsonResponse, errorToDto } from "../../../lib/api/helper";
 import { fromZodError, normalizeUnknownError } from "../../../lib/services/errors";
 import { validateCreateAdminActivityBody } from "../../../lib/validation/admin.activities.schema";
-import { createActivity } from "../../../lib/services/admin.activities.service";
+import { createActivity, listAllActivities } from "../../../lib/services/admin.activities.service";
 import type { AdminActivityDTO } from "../../../types";
 
 export const prerender = false;
@@ -85,6 +85,65 @@ export const POST: APIRoute = async (context) => {
     console.log(
       JSON.stringify({
         action: "CREATE_ACTIVITY",
+        phase: "error",
+        admin_id: adminProfile.id,
+        error_code: apiErr.code,
+        error_details: apiErr.details,
+        status: apiErr.status,
+        timestamp: new Date().toISOString(),
+      })
+    );
+    return jsonResponse(errorToDto(apiErr), apiErr.status);
+  }
+};
+
+// List all activities for admin (GET /api/admin/activities)
+export const GET: APIRoute = async (context) => {
+  const supabase = context.locals.supabase as SupabaseClient;
+
+  // ---- Auth ----
+  let adminProfile: { id: string; role: string };
+  try {
+    adminProfile = await authenticateAdmin(supabase);
+  } catch (err: unknown) {
+    const apiErr = normalizeUnknownError(err);
+    return jsonResponse(errorToDto(apiErr), apiErr.status);
+  }
+
+  // ---- Logging: start ----
+  // eslint-disable-next-line no-console
+  console.log(
+    JSON.stringify({
+      action: "LIST_ALL_ACTIVITIES",
+      phase: "start",
+      admin_id: adminProfile.id,
+      timestamp: new Date().toISOString(),
+    })
+  );
+
+  try {
+    const activities: AdminActivityDTO[] = await listAllActivities(supabase);
+
+    // ---- Logging: success ----
+    // eslint-disable-next-line no-console
+    console.log(
+      JSON.stringify({
+        action: "LIST_ALL_ACTIVITIES",
+        phase: "success",
+        admin_id: adminProfile.id,
+        returned_count: activities.length,
+        timestamp: new Date().toISOString(),
+      })
+    );
+
+    return jsonResponse({ activities }, 200);
+  } catch (err: unknown) {
+    const apiErr = normalizeUnknownError(err);
+    // ---- Logging: error ----
+    // eslint-disable-next-line no-console
+    console.log(
+      JSON.stringify({
+        action: "LIST_ALL_ACTIVITIES",
         phase: "error",
         admin_id: adminProfile.id,
         error_code: apiErr.code,

@@ -243,53 +243,51 @@ export const ParentProfileForm: React.FC<ParentProfileFormProps> = ({ initialPro
   const globalErrorToShow = state.globalErrors.length > 0 ? state.globalErrors : [];
 
   return (
-    <form onSubmit={onSubmit} className="mx-auto flex w-full max-w-md flex-col gap-6" noValidate>
-      <div className="space-y-2">
-        <h1 className="text-2xl font-semibold tracking-tight">Mój profil</h1>
-        <p className="text-sm text-muted-foreground">Zaktualizuj swoje podstawowe dane kontaktowe.</p>
-      </div>
+    <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
       {globalErrorToShow.length > 0 && <ValidationErrors errors={globalErrorToShow} />}
 
-      <div className="flex flex-col gap-4">
-        <div className="flex flex-col gap-1">
-          <label htmlFor={emailFieldId} className="text-sm font-medium">
-            Email
-          </label>
-          <input
-            id={emailFieldId}
-            type="email"
-            value={initialProfile.email}
-            readOnly
-            disabled
-            className="rounded-md border bg-muted px-3 py-2 text-sm text-muted-foreground"
-          />
-          <p className="text-xs text-muted-foreground">Adres email jest powiązany z kontem i nie można go zmienić.</p>
-        </div>
+      {state.status === "submitting" && (
+        <p className="text-xs text-neutral-500" aria-live="polite">
+          Zapisywanie...
+        </p>
+      )}
 
-        <TextField
-          label="Imię"
-          name="first_name"
-          required
-          value={state.values.first_name}
-          onChange={(v) => handleFieldChange("first_name", v)}
-          onBlur={() => handleBlur("first_name")}
-          error={hasFieldError("first_name") ? state.fieldErrors.first_name : undefined}
+      <div className="flex flex-col gap-1">
+        <label htmlFor={emailFieldId} className="text-sm font-medium">
+          Email
+        </label>
+        <input
+          id={emailFieldId}
+          type="email"
+          value={initialProfile.email}
+          readOnly
+          disabled
+          className="rounded-md border bg-muted px-3 py-2 text-sm text-muted-foreground"
         />
-
-        <TextField
-          label="Nazwisko"
-          name="last_name"
-          required
-          value={state.values.last_name}
-          onChange={(v) => handleFieldChange("last_name", v)}
-          onBlur={() => handleBlur("last_name")}
-          error={hasFieldError("last_name") ? state.fieldErrors.last_name : undefined}
-        />
+        <p className="text-xs text-muted-foreground">Adres email jest powiązany z kontem i nie można go zmienić.</p>
       </div>
 
-      <div className="flex justify-end">
-        <SubmitButton loading={state.status === "submitting"} label="Zapisz zmiany" disabled={isSubmitDisabled} />
-      </div>
+      <TextField
+        label="Imię"
+        name="first_name"
+        required
+        value={state.values.first_name}
+        onChange={(v) => handleFieldChange("first_name", v)}
+        onBlur={() => handleBlur("first_name")}
+        error={hasFieldError("first_name") ? state.fieldErrors.first_name : undefined}
+      />
+
+      <TextField
+        label="Nazwisko"
+        name="last_name"
+        required
+        value={state.values.last_name}
+        onChange={(v) => handleFieldChange("last_name", v)}
+        onBlur={() => handleBlur("last_name")}
+        error={hasFieldError("last_name") ? state.fieldErrors.last_name : undefined}
+      />
+
+      <SubmitButton loading={state.status === "submitting"} label="Zapisz zmiany" disabled={isSubmitDisabled} />
     </form>
   );
 };
