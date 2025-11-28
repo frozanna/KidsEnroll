@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ActivitiesFilters, ActivitiesListState, ActivitiesPagination } from "../../dashboard/activities/types";
 import { mapResponseToVm } from "../../dashboard/activities/types";
-import { useToastFeedback } from "../../useToastFeedback";
+import { useToastFeedback } from "../../ui/useToastFeedback";
 
 const DEFAULT_LIMIT = 20;
 

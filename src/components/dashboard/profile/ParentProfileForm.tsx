@@ -5,7 +5,7 @@ import { updateProfileSchema } from "@/lib/validation/profile.schema";
 import { TextField } from "@/components/form/TextField";
 import { ValidationErrors } from "@/components/form/ValidationErrors";
 import { SubmitButton } from "@/components/form/SubmitButton";
-import { useToastFeedback } from "@/components/useToastFeedback";
+import { useToastFeedback } from "@/components/ui/useToastFeedback";
 
 interface ParentProfileFormValues {
   first_name: string;

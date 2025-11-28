@@ -1,7 +1,7 @@
 // Simple wrapper for shadcn/ui toast system (placeholder until integrated)
 // In a real setup, we'd import useToast from the UI library. Here we simulate with console + optional global event.
 import { useCallback } from "react";
-import { useToast } from "./ui/use-toast";
+import { useToast } from "./use-toast";
 
 interface ToastOptions {
   title?: string;

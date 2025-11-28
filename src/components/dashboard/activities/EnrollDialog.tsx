@@ -8,7 +8,7 @@ import type {
   ApiErrorShape,
 } from "./types";
 import { Button } from "../../ui/button";
-import { useToastFeedback } from "../../useToastFeedback";
+import { useToastFeedback } from "../../ui/useToastFeedback";
 
 // NOTE: API integration & error mapping will be added in subsequent steps (todo #4/#5)
 

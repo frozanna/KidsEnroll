@@ -3,8 +3,8 @@ import type { APIRoute } from "astro";
 import type { SupabaseClient } from "../../db/supabase.client";
 
 export const GET: APIRoute = async (context) => {
-  const email = "allaniele.art@gmail.com";
-  const password = "parent1";
+  const email = "tomsiania@gmail.com";
+  const password = "admin";
 
   // const email = "test123@gmail.com";
   // const password = "parent2";

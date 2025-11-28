@@ -5,7 +5,7 @@ import { ActivitiesTable } from "./ActivitiesTable";
 import { PaginationControls } from "./PaginationControls";
 import { EmptyState } from "./EmptyState";
 import { Button } from "../../ui/button";
-import { LoadingSkeleton } from "./LoadingSkeleton";
+import { LoadingSkeleton } from "../../ui/LoadingSkeleton";
 import { EnrollDialog } from "./EnrollDialog";
 import { useChildren } from "../../hooks/parentDashboard/useChildren"; // existing hook
 import type { ActivityViewModel } from "./types";
