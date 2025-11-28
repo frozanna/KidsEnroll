@@ -17,7 +17,7 @@ import { z } from "zod";
 import type { AdminActivityCreateCommand, AdminActivityUpdateCommand } from "../../types";
 
 // Common tag regex: allow alphanum, dash, underscore, slash.
-const TAG_REGEX = /^[A-Za-z0-9-_/]{1,50}$/;
+const TAG_REGEX = /^[A-Za-z0-9\-_/ĄĆĘŁŃÓŚŹŻąćęłńóśźż]{1,50}$/u;
 
 // Datetime must be valid ISO and in the future (> now). We'll parse inside service too, but schema rejects past.
 function futureDateRefinement(val: string): boolean {

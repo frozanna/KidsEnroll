@@ -32,7 +32,7 @@ export const AdminActivitiesTable: React.FC<AdminActivitiesTableProps> = ({ acti
                 Godzina
               </th>
               <th scope="col" className="h-10 px-4 text-sm font-medium">
-                Limit / Wolne
+                Wolne / Limit
               </th>
               <th scope="col" className="h-10 px-4 text-sm font-medium">
                 Koszt

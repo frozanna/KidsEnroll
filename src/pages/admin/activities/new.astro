@@ -1,0 +1,28 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import AdminNavbar from "@/components/admin/AdminNavbar.tsx";
+import AdminActivityCreateForm from "@/components/admin/activities/AdminActivityCreateForm.tsx";
+import { listWorkers } from "@/lib/services/workers.service.ts";
+import type { ActivityWorkerDTO } from "@/types";
+
+export const prerender = false;
+
+const { locals } = Astro;
+let workers: ActivityWorkerDTO[] = [];
+try {
+  const w = await listWorkers(locals.supabase);
+  workers = w.workers ?? [];
+} catch {
+  workers = [];
+}
+---
+
+<Layout title="Dodaj zajęcia">
+  <div class="min-h-[60vh]">
+    <AdminNavbar />
+    <main class="container mx-auto px-4 py-6">
+      <h1 class="text-2xl font-semibold mb-4 flex justify-center">Dodaj zajęcia</h1>
+      <AdminActivityCreateForm client:load workers={workers} />
+    </main>
+  </div>
+</Layout>

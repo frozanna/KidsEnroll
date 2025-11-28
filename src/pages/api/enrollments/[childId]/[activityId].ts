@@ -90,7 +90,7 @@ export const DELETE: APIRoute = async (context) => {
         child_id: params.childId,
         activity_id: params.activityId,
         error_code: apiErr.code,
-        error_details: apiErr.details,
+        error_details: apiErr.message,
         status: apiErr.status,
         timestamp: new Date().toISOString(),
       })

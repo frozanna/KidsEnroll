@@ -18,7 +18,7 @@ export const AdminNavbar: React.FC<AdminNavbarProps> = ({ activeLabel }) => {
           className="px-0 text-base font-semibold text-secondary-foreground hover:bg-secondary/90 hover:text-secondary-foreground"
           asChild
         >
-          <a href="/app/admin/activities" aria-label="Przejdź do panelu administratora">
+          <a href="/admin/activities" aria-label="Przejdź do panelu administratora">
             EnrollKids Admin
           </a>
         </Button>

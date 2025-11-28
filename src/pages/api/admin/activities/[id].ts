@@ -107,7 +107,7 @@ export const PATCH: APIRoute = async (context) => {
         admin_id: adminProfile.id,
         activity_id: id,
         error_code: apiErr.code,
-        error_details: apiErr.details,
+        error_details: apiErr.message,
         status: apiErr.status,
         timestamp: new Date().toISOString(),
       })
@@ -181,7 +181,7 @@ export const DELETE: APIRoute = async (context) => {
         admin_id: adminProfile.id,
         activity_id: id,
         error_code: apiErr.code,
-        error_details: apiErr.details,
+        error_details: apiErr.message,
         status: apiErr.status,
         timestamp: new Date().toISOString(),
       })

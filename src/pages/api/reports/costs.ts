@@ -52,7 +52,7 @@ export const GET: APIRoute = async (context) => {
           phase: "error",
           parent_id: profile.id,
           error_code: apiErr.code,
-          error_details: apiErr.details,
+          error_details: apiErr.message,
           status: apiErr.status,
           timestamp: new Date().toISOString(),
         })
@@ -67,7 +67,7 @@ export const GET: APIRoute = async (context) => {
         phase: "error",
         parent_id: profile.id,
         error_code: apiErr.code,
-        error_details: apiErr.details,
+        error_details: apiErr.message,
         status: apiErr.status,
         timestamp: new Date().toISOString(),
       })
@@ -103,7 +103,7 @@ export const GET: APIRoute = async (context) => {
         week_start: week.weekStart,
         week_end: week.weekEnd,
         error_code: apiErr.code,
-        error_details: apiErr.details,
+        error_details: apiErr.message,
         status: apiErr.status,
         timestamp: new Date().toISOString(),
       })
@@ -169,7 +169,7 @@ export const GET: APIRoute = async (context) => {
         week_start: week.weekStart,
         week_end: week.weekEnd,
         error_code: apiErr.code,
-        error_details: apiErr.details,
+        error_details: apiErr.message,
         status: apiErr.status,
         timestamp: new Date().toISOString(),
       })

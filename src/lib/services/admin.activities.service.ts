@@ -139,26 +139,44 @@ export async function listActivitiesAdminDetailed(
     throw createError("INTERNAL_ERROR", error.message);
   }
 
-  const activities: ActivityDTO[] = (data ?? []).map((row: any) => {
-    const enrollCount = Array.isArray(row.enrollments) ? row.enrollments.length : 0;
-    return {
-      id: row.id,
-      name: row.name,
-      description: row.description,
-      cost: row.cost,
-      participant_limit: row.participant_limit,
-      start_datetime: row.start_datetime,
-      created_at: row.created_at,
-      available_spots: Math.max(0, row.participant_limit - enrollCount),
+  const activities: ActivityDTO[] = (data ?? []).map(
+    (row: {
+      id: number;
+      name: string;
+      description: string | null;
+      cost: number;
+      participant_limit: number;
+      start_datetime: string;
+      created_at: string;
       worker: {
-        id: row.worker?.id ?? 0,
-        first_name: row.worker?.first_name ?? "",
-        last_name: row.worker?.last_name ?? "",
-        email: row.worker?.email ?? "",
-      },
-      tags: (row.activity_tags ?? []).map((t: any) => t.tag),
-    } satisfies ActivityDTO;
-  });
+        id: number;
+        first_name: string;
+        last_name: string;
+        email: string;
+      } | null;
+      activity_tags: { tag: string }[];
+      enrollments: { child_id: number }[];
+    }) => {
+      const enrollCount = Array.isArray(row.enrollments) ? row.enrollments.length : 0;
+      return {
+        id: row.id,
+        name: row.name,
+        description: row.description,
+        cost: row.cost,
+        participant_limit: row.participant_limit,
+        start_datetime: row.start_datetime,
+        created_at: row.created_at,
+        available_spots: Math.max(0, row.participant_limit - enrollCount),
+        worker: {
+          id: row.worker?.id ?? 0,
+          first_name: row.worker?.first_name ?? "",
+          last_name: row.worker?.last_name ?? "",
+          email: row.worker?.email ?? "",
+        },
+        tags: (row.activity_tags ?? []).map((t: { tag: string }) => t.tag),
+      } satisfies ActivityDTO;
+    }
+  );
 
   return {
     activities,
@@ -284,11 +302,12 @@ export async function deleteActivity(supabase: SupabaseClient, id: number): Prom
   // 2. Count enrollments referencing this activity
   const { count: enrollCount, error: countError } = await supabase
     .from("enrollments")
-    .select("id", { count: "exact", head: true })
+    .select("child_id", { count: "exact" })
     .eq("activity_id", id);
-  if (countError) {
+  if (countError && (countError.message || countError.code)) {
     throw createError("INTERNAL_ERROR", countError.message);
   }
+
   const notifications_sent = enrollCount ?? 0;
 
   // 3. Delete activity (cascade will remove dependents)
@@ -303,5 +322,3 @@ export async function deleteActivity(supabase: SupabaseClient, id: number): Prom
     notifications_sent,
   } satisfies AdminActivityDeleteResponseDTO;
 }
-
-// (No bottom import — previous erroneous self-import removed)

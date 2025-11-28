@@ -83,7 +83,7 @@ export const GET: APIRoute = async (context) => {
         parent_id: profile.id,
         child_id: paramsParsed.id,
         error_code: apiErr.code,
-        error_details: apiErr.details,
+        error_details: apiErr.message,
         status: apiErr.status,
         timestamp: new Date().toISOString(),
       })

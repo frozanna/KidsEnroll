@@ -88,7 +88,7 @@ export const POST: APIRoute = async (context) => {
         phase: "error",
         admin_id: adminProfile.id,
         error_code: apiErr.code,
-        error_details: apiErr.details,
+        error_details: apiErr.message,
         status: apiErr.status,
         timestamp: new Date().toISOString(),
       })
@@ -163,7 +163,7 @@ export const GET: APIRoute = async (context) => {
         phase: "error",
         admin_id: adminProfile.id,
         error_code: apiErr.code,
-        error_details: apiErr.details,
+        error_details: apiErr.message,
         status: apiErr.status,
         timestamp: new Date().toISOString(),
       })
