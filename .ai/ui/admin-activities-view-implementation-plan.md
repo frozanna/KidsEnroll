@@ -1,165 +1,194 @@
-# Plan implementacji widoku Lista zajęć (Admin)
+# Plan implementacji widoku Admin Activities
 
 ## 1. Przegląd
-Widok umożliwia administratorowi zarządzanie zajęciami: przegląd listy, wyszukiwanie, paginację, edycję oraz usuwanie. Dodatkowo `/admin` służy jako startowy redirect (302) do `/admin/activities` bez UI.
+Widok administracyjny zarządzania zajęciami umożliwia administratorowi przegląd, wyszukiwanie, paginację, edycję oraz usuwanie zajęć. Dostarcza tabelę z kluczowymi atrybutami (nazwa, tagi, opiekun, data/godzina, limit, wolne miejsca, koszt) oraz akcjami (Edytuj, Usuń). Usunięcie wymaga potwierdzenia w oknie dialogowym i prezentuje informację o mockowanych powiadomieniach do rodziców poprzez toast po sukcesie.
 
 ## 2. Routing widoku
-- Redirect startowy admina: ścieżka `/admin` → 302 do `/admin/activities` (bez UI).
-- Lista zajęć (admin): ścieżka `/admin/activities`.
-- Parametry query: `page` (liczba, domyślnie 1), `search` (string, opcjonalnie).
+- Redirect startowy: `/admin` → 302 do `/admin/activities`
+- Główny widok listy: `/admin/activities`
+  - Parametry query: `page` (number, >=1), `search` (string, opcjonalny), w przyszłości `limit` (number) jeśli konfigurowalne.
 
 ## 3. Struktura komponentów
-- `pages/admin/index.astro` (redirect 302 → `/admin/activities`).
-- `pages/admin/activities/index.astro` (SSR kontener dla listy):
-  - `src/components/admin/activities/AdminActivitiesPage.tsx` (React, klientowy):
-    - `ActivitiesToolbar.tsx` (wyszukiwarka, przyciski akcji)
-    - `ActivitiesTable.tsx` (DataTable: kolumny i działania)
-      - `ConfirmDeleteDialog.tsx` (AlertDialog)
-      - `Skeleton` (LoadingSkeleton.tsx)
-    - `Toast` (globalna informacja o sukcesie/błędzie)
-    - `Pagination` (w toolbarze lub pod tabelą)
+```
+AdminActivitiesPage (layout wrapper)
+  ├─ AdminNavbar (analogiczny do ParentNavbar – nawigacja admina)
+  ├─ ActivitiesAdminToolbar
+  │    ├─ SearchField
+  │    ├─ ResetButton
+  │    ├─ CreateActivityLinkButton (opcjonalnie – jeśli edycja/dodawanie w MVP)
+  ├─ ActivitiesAdminTable
+  │    ├─ TableHeader (kolumny)
+  │    ├─ TableBody
+  │    │    ├─ ActivityRow (dla każdej aktywności)
+  │    │           ├─ TagsBadgeList
+  │    │           ├─ ActivityRowActions
+  │    │                  ├─ EditLinkButton
+  │    │                  ├─ DeleteActivityTriggerButton
+  │    ├─ EmptyState (gdy brak danych)
+  ├─ PaginationControls (reuse z rodzica z adaptacją stylów)
+  ├─ DeleteActivityDialog (AlertDialog)
+  ├─ GlobalToastProvider (jeśli nie istnieje już w Layout)
+  ├─ LoadingSkeleton (przy initial/loading transitions)
+```
 
 ## 4. Szczegóły komponentów
-### pages/admin/index.astro
-- Opis: prosty redirect bez UI.
-- Główne elementy: brak, tylko odpowiedź 302.
-- Obsługiwane interakcje: brak.
-- Walidacja: brak.
-- Typy: brak.
-- Propsy: brak.
+### AdminActivitiesPage
+- Opis: Kontener strony /admin/activities, pobiera dane (hook), synchronizuje stan z URL (page, search), renderuje toolbar + tabelę + dialog i toast. Odpowiada za SSR/CSR wybór strategii (client:load React, bo interaktywność).
+- Główne elementy: `<main>`, `<section>` dla tabeli; komponenty dzieci wymienione wyżej.
+- Interakcje: Inicjalizacja fetch, zmiana page, zmiana search, otwarcie dialogu usunięcia, potwierdzenie usunięcia.
+- Walidacja: Normalizacja `page` (jeśli <1 → 1), sanity dla `search` (trim, max length np. 64), debounce wyszukiwania.
+- Typy: `AdminActivitiesListState`, `AdminActivityViewModel`, `AdminActivitiesFilters`, `DeleteActivityState`.
+- Propsy: Brak (top-level page). Wewnętrzny state via hooks.
 
-### pages/admin/activities/index.astro
-- Opis: SSR kontener, wyciąga parametry `page` i `search` z query, renderuje `AdminActivitiesPage` z propami startowymi.
-- Główne elementy: layout, import komponentu React.
-- Obsługiwane interakcje: odświeżenie strony przy zmianie query (Astro View Transitions zalecane).
-- Walidacja: sanity dla `page` (>=1), `search` (trim, max długość np. 100 znaków).
-- Typy: `{ initialPage: number; initialSearch?: string }`.
-- Propsy: przekazuje `initialPage`, `initialSearch` do `AdminActivitiesPage`.
+### ActivitiesAdminToolbar
+- Opis: Panel filtracji/wyszukiwania + opcjonalne akcje (dodaj zajęcia). Analogiczny do `ActivitiesToolbar` z panelu rodzica, ale uproszczony do search.
+- Elementy: `<form>` (opcjonalnie), `<input type="search">`, przycisk reset, przycisk utworzenia (link do np. `/admin/activities/new`).
+- Interakcje: onSearchChange (debounced), onSubmit (prevent default), onReset (czyści search i page=1).
+- Walidacja: Maksymalna długość, dopuszczalne znaki (np. litery, cyfry, spacje, przecinki); w przypadku blokowania – wskaźnik błędu (aria-invalid).
+- Typy: `AdminActivitiesFilters` (z polem `search?: string`).
+- Propsy: `{ search: string; onSearchChange(v: string): void; onReset(): void; }`
 
-### AdminActivitiesPage.tsx
-- Opis: główny widok klientowy. Orkiestruje pobieranie danych, reaguje na interakcje (szukanie, paginacja, usuwanie, edycja).
-- Główne elementy: `ActivitiesToolbar`, `ActivitiesTable`, `Toast`, `Pagination`.
-- Obsługiwane interakcje:
-  - Wpisanie frazy w search i potwierdzenie (Enter/klik).
-  - Zmiana strony.
-  - Klik "Edytuj" (link do przyszłego widoku edycji).
-  - Klik "Usuń" → `ConfirmDeleteDialog` → potwierdzenie.
-- Walidacja:
-  - `search`: trim, brak znaków kontrolnych; długość do 100.
-  - `page`: liczba całkowita >= 1.
-- Typy (DTO / ViewModel):
-  - `AdminActivityDTO` (z backendu): `{ id, name, description, cost, participant_limit, start_datetime, worker_id, facility_id, created_at }`.
-  - `AdminActivityRowVM`: `{ id, name, tags: string[], workerName: string | null, startDate: string, startTime: string, limit: number, freeSlots: number | null, cost: number }`.
-  - `ActivitiesListResponse`: `{ items: AdminActivityRowVM[], page: number, pageSize: number, total: number }`.
-  - `DeleteResponse`: `{ message: string; notifications_sent: number }`.
-- Propsy: `{ initialPage: number; initialSearch?: string }`.
+### ActivitiesAdminTable
+- Opis: Tabela danych z headerem, body i stanami (loading, empty). Wyświetla listę aktywności, umożliwia akcje w wierszu.
+- Elementy: `<table>`, `<thead>`, `<tbody>`, `<tr>`, `<td>`, `<caption>` (opcjonalnie dla a11y), Skeleton overlay.
+- Interakcje: Klik przycisków w `ActivityRowActions`. (Sortowanie w przyszłości – obecnie brak implementacji jeśli backend nie wspiera.)
+- Walidacja: N/A dla wejść – prezentacja danych. Waliduje obecność pól (fallbacky np. brak opisu → "—").
+- Typy: `AdminActivityViewModel[]`.
+- Propsy: `{ activities: AdminActivityViewModel[]; loading: boolean; onDelete(id: number): void; }`
 
-### ActivitiesToolbar.tsx
-- Opis: pasek narzędzi nad tabelą (pole wyszukiwania, przyciski).
-- Główne elementy: `TextField`, `Button`, (opcjonalnie) `Badge` dla aktywnego filtra.
-- Obsługiwane interakcje: wpisywanie frazy, submit (onSearch), reset (onReset), nawigacja po stronie.
-- Walidacja: jak wyżej dla `search`.
-- Typy: `ToolbarProps = { search: string; onSearch: (q: string) => void; onReset?: () => void }`.
-- Propsy: `search`, `onSearch`, `onReset`.
+### ActivityRow
+- Opis: Reprezentacja jednego rekordu aktywności.
+- Elementy: `<tr>` z komórkami: name, tags (TagsBadgeList), worker, date/time, limit/available, cost, actions.
+- Interakcje: Przekazuje do `ActivityRowActions`.
+- Walidacja: Formatowanie daty/czasu (locale), walidacja cost (number → currency), available vs participantLimit (gdy 0 wolnych miejsc – styl czerwony, aria-label informujący).
+- Typy: `AdminActivityViewModel`.
+- Propsy: `{ activity: AdminActivityViewModel; onDelete(id: number): void; }`
 
-### ActivitiesTable.tsx
-- Opis: tabela z kolumnami: nazwa, tagi, opiekun, data/godzina, limit, wolne miejsca, koszt, akcje.
-- Główne elementy: tabela z wierszami, `Button` (Edytuj/Usuń), `Badge` (tagi), `Skeleton` (loading), stan pusty.
-- Obsługiwane interakcje: klik Edytuj (link), klik Usuń (otwiera `ConfirmDeleteDialog`).
-- Walidacja: brak (dotyczy wejściowych danych, filtrowanych w rodzicu).
-- Typy: `ActivitiesTableProps = { rows: AdminActivityRowVM[]; loading: boolean; onDelete: (id: number) => void }`.
-- Propsy: `rows`, `loading`, `onDelete`.
+### TagsBadgeList
+- Opis: Lista tagów jako wizualne badge. Reużywa `Badge` z shadcn/ui.
+- Elementy: `<div>` wrapper + `<span>`/Badge.
+- Interakcje: Brak (display only).
+- Walidacja: Puste tagi → renderuje "—".
+- Typy: `string[]`.
+- Propsy: `{ tags: string[] }`
 
-### ConfirmDeleteDialog.tsx
-- Opis: modal potwierdzenia usunięcia, pokazuje informację o liczbie powiadomień (mock: toasts) po usunięciu.
-- Główne elementy: `AlertDialog` z potwierdzeniem i anulowaniem.
-- Obsługiwane interakcje: potwierdź → wywołanie `onConfirm`; anuluj → zamknięcie.
-- Walidacja: brak.
-- Typy: `ConfirmDeleteDialogProps = { open: boolean; onOpenChange: (o: boolean) => void; onConfirm: () => Promise<void>; busy: boolean }`.
-- Propsy: `open`, `onOpenChange`, `onConfirm`, `busy`.
+### ActivityRowActions
+- Opis: Kontener przycisków Edytuj/Usuń. Edytuj: link do `/admin/activities/[id]/edit` (future). Usuń: otwiera dialog.
+- Elementy: `<div>` + `<Button>` / `<Link>`.
+- Interakcje: onClick Delete → wywołuje callback.
+- Walidacja: Disabled przycisku Usuń jeśli trwa usuwanie.
+- Typy: `RowActionHandlers`.
+- Propsy: `{ activityId: number; onRequestDelete(id: number): void; }`
 
-### Toast
-- Opis: feedback po operacjach (sukces/błąd), w szczególności po usunięciu.
-- Główne elementy: shadcn/ui `toast` + wrapper `toaster-wrapper.tsx`.
-- Obsługiwane interakcje: zamknięcie toastu.
-- Walidacja: brak.
-- Typy: wbudowane z `use-toast`.
-- Propsy: brak (hook).
+### DeleteActivityDialog
+- Opis: AlertDialog do potwierdzenia usunięcia; ostrzega o mock powiadomieniach do rodziców. W trakcie submit pokazuje spinner w przycisku.
+- Elementy: `AlertDialog` z tytułem, opisem, przyciskami Cancel/Confirm.
+- Interakcje: Confirm → wywołanie API DELETE, sukces → toast, zamknięcie dialogu.
+- Walidacja: Blokada Confirm przy loading; anulowanie resetuje stan.
+- Typy: `DeleteActivityState`, `ApiErrorShape`.
+- Propsy: `{ open: boolean; activity?: AdminActivityViewModel | null; onConfirm(id: number): void; onCancel(): void; submitting: boolean; error?: ApiErrorShape | null; }`
 
-### Skeleton / Loading
-- Opis: placeholdery przy pobieraniu danych tabeli.
-- Główne elementy: `LoadingSkeleton.tsx`.
-- Obsługiwane interakcje: brak.
-- Walidacja: brak.
-- Typy: brak.
-- Propsy: `rows`, `columns` opcjonalnie.
+### PaginationControls
+- Opis: Nawigacja po stronach wyników. Reuse istniejącego komponentu z ewentualną modyfikacją do admin.
+- Elementy: `<nav>` + przyciski Prev/Next + info o bieżącej stronie / total.
+- Interakcje: onPageChange(page).
+- Walidacja: Brak – blokuje Prev gdy page=1; blokuje Next gdy page*limit >= total.
+- Typy: `PaginationState`.
+- Propsy: `{ page: number; limit: number; total: number; onPageChange(p: number): void; }`
+
+### LoadingSkeleton
+- Opis: Wskazanie ładowania początkowego i przy przełączaniu page/search (opcjonalny fade).
+- Elementy: Placeholdery Shadcn Skeleton.
+- Interakcje: Brak.
+- Walidacja: N/A.
+- Typy: N/A.
+- Propsy: `{ variant?: "table" }` (opcjonalnie).
+
+### EmptyState
+- Opis: Komponent informujący o braku wyników (po wyszukiwaniu lub brak danych w bazie).
+- Elementy: Ikona / tekst / opcjonalny link resetujący filtr.
+- Interakcje: Reset search.
+- Walidacja: N/A.
+- Typy: N/A.
+- Propsy: `{ message?: string; onResetSearch?(): void; }`
 
 ## 5. Typy
-- `AdminActivityDTO` (z backendu) – używany do transformacji do `AdminActivityRowVM`.
-- `AdminActivityRowVM` – ViewModel wiersza tabeli:
-  - `id: number`
-  - `name: string`
-  - `tags: string[]` (pobrane z `activity_tags` – może wymagać rozszerzenia zapytania w serwisie lub pobrania w UI)
-  - `workerName: string | null` (może wymagać joinu/pobrania w UI)
-  - `startDate: string` (YYYY-MM-DD)
-  - `startTime: string` (HH:mm)
-  - `limit: number`
-  - `freeSlots: number | null` (liczone z `participant_limit` - liczba zapisów; może wymagać API liczącego lub dodatkowego zapytania)
-  - `cost: number`
-- `ActivitiesListResponse` – lista z paginacją: `{ items: AdminActivityRowVM[]; page: number; pageSize: number; total: number }`.
-- `DeleteResponse` – odpowiedź po usunięciu: `{ message: string; notifications_sent: number }`.
-- `ToolbarProps`, `ActivitiesTableProps`, `ConfirmDeleteDialogProps` – jak w sekcji komponentów.
+### Istniejące
+- `AdminActivityDTO`: pełny rekord aktywności (backend row) + pola bazowe.
+### Nowe / Rozszerzone
+- `AdminActivityListItemDTO` (opcjonalnie jeśli chcemy odchudzić): Pick pól: id, name, cost, participant_limit, start_datetime, worker_id + joined worker (first_name, last_name, email) + computed available_spots + tags.
+- `AdminActivitiesListResponseDTO`: `{ activities: AdminActivityDTO[]; page: number; limit: number; total: number; }`
+- `AdminActivityViewModel`: `{ id: number; name: string; description: string | null; costFormatted: string; participantLimit: number; availableSpots: number; isFull: boolean; startDateLocal: string; startTimeLocal: string; workerName: string; workerEmail: string; tags: string[]; startISO: string; }`
+- `AdminActivitiesFilters`: `{ search?: string; }`
+- `PaginationState`: `{ page: number; limit: number; total: number; }`
+- `AdminActivitiesListState`: `{ filters: AdminActivitiesFilters; pagination: PaginationState; data: AdminActivityViewModel[]; loadState: LoadState; error?: string; deleteDialog: { open: boolean; activityId?: number }; }`
+- `DeleteActivityState`: `{ submitting: boolean; error?: ApiErrorShape | null; success?: boolean; }`
+- `ApiErrorShape`: `{ code: string; message: string; }`
+- `LoadState`: union (`"idle" | "loading" | "error" | "success"`).
+
+### Mapowanie DTO → ViewModel
+Funkcja `mapAdminActivityDtoToVm(dto: AdminActivityDTO): AdminActivityViewModel` (analogiczna do istniejącego `mapDtoToVm`). Formatowanie walut PLN, dat lokalnych, `isFull = available_spots === 0`.
 
 ## 6. Zarządzanie stanem
-- Lokalny stan w `AdminActivitiesPage`:
-  - `search` (string) – zsynchronizowany z query (`?search=`) i polem w toolbarze.
-  - `page` (number) – zsynchronizowany z query (`?page=`).
-  - `loading` (boolean) – dla listy.
-  - `rows` (`AdminActivityRowVM[]`).
-  - `total`, `pageSize` – do paginacji.
-  - `deleteDialog` (`{ open: boolean; targetId?: number; busy: boolean }`).
-- Custom hook: `useAdminActivities` (opcjonalnie) – kapsułkuje pobieranie listy, parametry, oraz mutacje usuwania.
-- Synchronizacja z URL: przy zmianach `page`/`search`, aktualizacja `window.history.replaceState` lub `ClientRouter` (Astro View Transitions) dla płynnych przejść.
+- Hook `useAdminActivitiesList`:
+  - Stan: `AdminActivitiesListState`.
+  - Efekty: Na zmianę `filters.search` (debounced 300ms) lub `pagination.page` – refetch.
+  - API: `fetchActivities({ page, limit, search })` → ustawia loadState.
+  - Metody: `setSearch(s)`, `goToPage(p)`, `openDeleteDialog(id)`, `closeDeleteDialog()`, `confirmDelete()`.
+- Hook `useDeleteActivity` (może być wbudowany w główny, jeśli prosty): zarządza submitting + wywołaniem DELETE.
+- Synchronizacja z URL: przy mount odczyt `page`, `search`; przy zmianie push/replace do `window.history` (`?page=...&search=...`).
+- Optymistyczne usunięcie: Po sukcesie usuń z `data` lokalnie bez refetch lub wykonaj refetch dla spójności (jeśli wpływa na dostępne miejsca w innych rekordach – raczej nie wprost).
 
 ## 7. Integracja API
-- Lista zajęć: w MVP brak dedykowanego endpointu w `admin.activities.service.ts` dla listy z tagami i wolnymi miejscami. Opcje:
-  1) Dodać w warstwie API rozszerzone selecty (join do `activity_tags`, `workers`, i count enrollments). Albo
-  2) W UI zrobić wielokrotne zapytania: pobrać `activities`, potem dla widocznych ID pobrać `activity_tags` i policzyć `enrollments` per ID (head count). Zalecane 1) dla wydajności.
-- Usuwanie: `deleteActivity(supabase, id)` zwraca `{ message, notifications_sent }`.
-- Edycja: `updateActivity(...)` (przyszłe użycie przy widoku edycji – tu tylko link).
-- Tworzenie: `createActivity(...)` (przyszłe).
-
-Typy żądań/odpowiedzi:
-- GET `/api/admin/activities?search=...&page=...` → `ActivitiesListResponse` (server paginated).
-- DELETE `/api/admin/activities/:id` → `DeleteResponse`.
+- GET `/api/admin/activities?page={page}&limit={limit}&search={search}`
+  - Request params: `page:number`, `limit:number`, `search?:string`.
+  - Response: `AdminActivitiesListResponseDTO`.
+- DELETE `/api/admin/activities/{id}`
+  - Response: `{ id: number; notifications_sent: number; }` (AdminActivityDeleteResponseDTO – istniejący typ z serwisu).
+- Mapowanie błędów: 401/403 → komunikat o braku uprawnień; 404 przy DELETE → toast błędu i zamknięcie dialogu; 500 → toast ogólny.
 
 ## 8. Interakcje użytkownika
-- Wpisanie frazy i submit: odświeża listę od strony 1, aktualizuje query, pokazuje loading/skeleton.
-- Zmiana strony: aktualizuje query, pobiera nową stronę, pokazuje loading/skeleton.
-- Kliknięcie „Edytuj”: przejście do dedykowanego widoku edycji (link).
-- Kliknięcie „Usuń”: otwarcie dialogu; potwierdzenie usuwa zajęcia, pokazuje Toast z informacją „Usunięto. Wysłano powiadomienia: X” (mock), odświeża listę.
+- Wpisanie tekstu w pole szukania → debounce → aktualizacja URL → fetch.
+- Klik "Reset" → czyści search, page=1, refetch.
+- Klik przycisku paginacji (Prev/Next) → aktualizacja page → refetch.
+- Klik "Usuń" w wierszu → otwiera dialog.
+- Potwierdzenie w dialogu → DELETE → toast sukcesu z informacją o liczbie powiadomień (mock) → zamyka dialog.
+- Anulowanie dialogu → zamyka bez akcji.
+- Brak wyników po search → EmptyState z możliwością resetu.
 
 ## 9. Warunki i walidacja
-- `search`: trim, długość ≤ 100; brak znaków kontrolnych.
-- `page`: integer ≥ 1. Jeśli niepoprawne, cofnięcie do 1.
-- Dane tabeli: formatowanie daty/godziny z `start_datetime` (ISO) na `startDate`, `startTime`.
-- `freeSlots`: jeśli brak danych o liczbie zapisów – pokazać `null`/„—” lub policzyć gdy endpoint dostępny.
+- `page`: jeśli brak lub <1 → 1.
+- `search`: przy trim pusty string → usunięcie parametru; długość >64 → przycięcie.
+- Dostępność przycisku Prev: `page > 1`; Next: `page < ceil(total/limit)`.
+- W dialogu Delete: disabled Confirm gdy `submitting`.
+- Formatowanie daty/czasu: użycie `Intl.DateTimeFormat` z locale użytkownika.
+- Koszt: `Intl.NumberFormat` z PLN.
+- Wskaźnik pełnych zajęć: `availableSpots === 0` → aria-label "Brak wolnych miejsc".
 
 ## 10. Obsługa błędów
-- Pobranie listy: błąd sieci/serwera → Toast z komunikatem i sugestia ponowienia; tabela pusta.
-- Usunięcie: błąd → Toast, pozostawienie dialogu z możliwością ponowienia.
-- Brak wyników: render pustej tabeli ze stanem pustym.
-- Edge cases: znikające dane między zapytaniami (race conditions) – traktować jako odświeżenie listy po błędzie.
+- Sieć / fetch fail: `loadState = "error"` + komunikat i przycisk retry.
+- Brak uprawnień (401/403): Redirect do strony logowania lub toast + blokada widoku.
+- API 404 przy DELETE: Komunikat "Zajęcia nie istnieją" → usunięcie z listy jeśli były widoczne.
+- Walidacja parametrów (page): automatyczna korekta.
+- Timeout (opcjonalnie): pokaż ogólny błąd.
+- Race condition (usunięcie zanim dialog potwierdzony): 404 obsłużone jak wyżej.
 
 ## 11. Kroki implementacji
-1. Utwórz `pages/admin/index.astro` z 302 redirectem do `/admin/activities` (Astro Response.redirect).
-2. Utwórz `pages/admin/activities/index.astro` (SSR) – odczyt `page`/`search` z `Astro.url`, sanity check, przekazanie do klientowego komponentu.
-3. Dodaj `src/components/admin/activities/AdminActivitiesPage.tsx` – stan, pobieranie, integracje, synchronizacja z URL.
-4. Użyj istniejących komponentów z `src/components/dashboard/activities/` jako punktu odniesienia (np. `ActivitiesTable.tsx`, `LoadingSkeleton.tsx`) lub sklonuj w nowej ścieżce `src/components/admin/activities/` i dostosuj kolumny.
-5. Zaimplementuj `ActivitiesToolbar.tsx` (pole wyszukiwania + akcje), `Pagination` (prosty komponent lub integracja istniejąca).
-6. Zaimplementuj `ConfirmDeleteDialog.tsx` w oparciu o shadcn/ui `AlertDialog`.
-7. Podłącz `toast` z `src/components/ui/use-toast.ts` i `toaster-wrapper.tsx` w layoucie lub lokalnie.
-8. Zaimplementuj API endpoint `/pages/api/admin/activities/index.ts` (GET) z paginacją i wyszukiwaniem; rozszerz selekcje o tagi i liczbę zapisów (JOIN/COUNT) lub zaimplementuj agregację po stronie serwera w `admin.activities.service.ts`.
-9. Zaimplementuj endpoint `/pages/api/admin/activities/[id].ts` (DELETE) używający `deleteActivity` z serwisu.
-10. W `AdminActivitiesPage` podłącz GET/DELETE endpointy; zmapuj `AdminActivityDTO` + dodatkowe dane do `AdminActivityRowVM`.
-11. Dodaj walidacje i edge cases (pusty stan, skeletony, błędy) zgodnie z sekcjami powyżej.
+1. Dodaj redirect stronę `/src/pages/admin/index.astro` z 302 do `/admin/activities` (Astro endpoint lub meta refresh + server response). 
+2. Utwórz stronę `/src/pages/admin/activities/index.astro` z layoutem i osadzeniem komponentu `AdminActivitiesPage` (`client:load`).
+3. Dodaj komponent `AdminActivitiesPage.tsx` w `src/components/admin/activities/` (nowy katalog) – analogia do rodzica.
+4. Zaimplementuj typy: `AdminActivityViewModel`, `AdminActivitiesListResponseDTO` (jeśli backend doda), `AdminActivitiesListState` w pliku `types.ts` lub lokalnym `types.ts` obok komponentów.
+5. Dodaj mapping funkcję `mapAdminActivityDtoToVm`.
+6. Utwórz hook `useAdminActivitiesList.ts` w `src/components/hooks/admin/` z zarządzaniem stanem, integracją URL i fetch API.
+7. Zaimplementuj `ActivitiesAdminToolbar.tsx` – search + reset; integracja z hookiem.
+8. Zaimplementuj `ActivitiesAdminTable.tsx`, `ActivityRow.tsx`, `ActivityRowActions.tsx`, `TagsBadgeList.tsx`.
+9. Reużyj lub skopiuj `PaginationControls.tsx` z panelu rodzica do katalogu admin (lub uogólnij wspólny komponent w `src/components/dashboard/shared/`).
+10. Dodaj `DeleteActivityDialog.tsx` – wykorzystaj AlertDialog z shadcn/ui.
+11. Dodaj logikę wywołania DELETE w hooku (metoda `confirmDelete`).
+12. Podłącz toast: użyj istniejącego `toaster-wrapper.tsx` (lub globalny provider). Wyświetl sukces z liczbą `notifications_sent`.
+13. Obsłuż stany: loading (Skeleton), error (retry), empty (EmptyState).
+14. Dodaj atrybuty a11y: aria-label dla pełnych zajęć, odpowiednie role w tabeli (caption/aria-describedby dla opisów).
+15. Test manualny: wyszukiwanie, paginacja (symulowana jeśli brak backend), usuwanie (mock). 
+16. Dodaj e2e scenariusz (opcjonalnie) lub jednostkowe testy mappingu typów.
+17. Refaktoryzuj wspólne code (np. formatowanie daty/kosztu) do utili w `src/lib/utils.ts` jeśli duplikacja.
+20. Finalne review kodu pod kątem wytycznych (.github/instructions/*.md) i dostępności.

@@ -18,8 +18,8 @@ import type { SupabaseClient } from "../../../db/supabase.client";
 import { authenticateAdmin, jsonResponse, errorToDto } from "../../../lib/api/helper";
 import { fromZodError, normalizeUnknownError } from "../../../lib/services/errors";
 import { validateCreateAdminActivityBody } from "../../../lib/validation/admin.activities.schema";
-import { createActivity, listAllActivities } from "../../../lib/services/admin.activities.service";
-import type { AdminActivityDTO } from "../../../types";
+import { createActivity, listActivitiesAdminDetailed } from "../../../lib/services/admin.activities.service";
+import type { AdminActivityDTO, ActivitiesListResponseDTO } from "../../../types";
 
 export const prerender = false;
 
@@ -97,7 +97,7 @@ export const POST: APIRoute = async (context) => {
   }
 };
 
-// List all activities for admin (GET /api/admin/activities)
+// List activities for admin with pagination & aggregates (GET /api/admin/activities)
 export const GET: APIRoute = async (context) => {
   const supabase = context.locals.supabase as SupabaseClient;
 
@@ -110,40 +110,56 @@ export const GET: APIRoute = async (context) => {
     return jsonResponse(errorToDto(apiErr), apiErr.status);
   }
 
+  // ---- Query Params ----
+  const url = new URL(context.request.url);
+  const pageParam = url.searchParams.get("page");
+  const limitParam = url.searchParams.get("limit");
+  const search = url.searchParams.get("search") || undefined;
+  const page = Math.max(1, Number(pageParam) || 1);
+  const limit = Math.min(100, Math.max(1, Number(limitParam) || 10));
+
   // ---- Logging: start ----
   // eslint-disable-next-line no-console
   console.log(
     JSON.stringify({
-      action: "LIST_ALL_ACTIVITIES",
+      action: "LIST_ACTIVITIES_ADMIN",
       phase: "start",
       admin_id: adminProfile.id,
+      page,
+      limit,
+      search: search ?? null,
       timestamp: new Date().toISOString(),
     })
   );
 
   try {
-    const activities: AdminActivityDTO[] = await listAllActivities(supabase);
+    const result: ActivitiesListResponseDTO = await listActivitiesAdminDetailed(supabase, {
+      page,
+      limit,
+      search,
+    });
 
     // ---- Logging: success ----
     // eslint-disable-next-line no-console
     console.log(
       JSON.stringify({
-        action: "LIST_ALL_ACTIVITIES",
+        action: "LIST_ACTIVITIES_ADMIN",
         phase: "success",
         admin_id: adminProfile.id,
-        returned_count: activities.length,
+        returned_count: result.activities.length,
+        total: result.pagination.total,
         timestamp: new Date().toISOString(),
       })
     );
 
-    return jsonResponse({ activities }, 200);
+    return jsonResponse(result, 200);
   } catch (err: unknown) {
     const apiErr = normalizeUnknownError(err);
     // ---- Logging: error ----
     // eslint-disable-next-line no-console
     console.log(
       JSON.stringify({
-        action: "LIST_ALL_ACTIVITIES",
+        action: "LIST_ACTIVITIES_ADMIN",
         phase: "error",
         admin_id: adminProfile.id,
         error_code: apiErr.code,

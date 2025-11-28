@@ -23,6 +23,8 @@ import type {
   AdminActivityUpdateCommand,
   AdminActivityUpdateResponseDTO,
   AdminActivityDeleteResponseDTO,
+  ActivityDTO,
+  ActivitiesListResponseDTO,
 } from "../../types";
 import { createError } from "./errors";
 import { PGRST_ROW_NOT_FOUND } from "../postgres.utils";
@@ -106,6 +108,62 @@ export async function listAllActivities(supabase: SupabaseClient): Promise<Admin
     throw createError("INTERNAL_ERROR", error.message);
   }
   return (data ?? []) as AdminActivityDTO[];
+}
+
+// Detailed admin listing with pagination & aggregates matching ActivityListItemDTO shape used on frontend.
+// Includes nested worker, tags, enrollment-derived available_spots and total count.
+export async function listActivitiesAdminDetailed(
+  supabase: SupabaseClient,
+  opts: { page: number; limit: number; search?: string }
+): Promise<ActivitiesListResponseDTO> {
+  const { page, limit, search } = opts;
+  const from = (page - 1) * limit;
+  const to = from + limit - 1;
+
+  let query = supabase
+    .from("activities")
+    .select(
+      "id, name, description, cost, participant_limit, start_datetime, created_at, worker:workers(id, first_name, last_name, email), activity_tags(tag), enrollments(child_id)",
+      { count: "exact" }
+    )
+    .order("created_at", { ascending: false })
+    .range(from, to);
+
+  if (search) {
+    // Search by name or description (case-insensitive)
+    query = query.or(`name.ilike.%${search}%,description.ilike.%${search}%`);
+  }
+
+  const { data, error, count } = await query;
+  if (error) {
+    throw createError("INTERNAL_ERROR", error.message);
+  }
+
+  const activities: ActivityDTO[] = (data ?? []).map((row: any) => {
+    const enrollCount = Array.isArray(row.enrollments) ? row.enrollments.length : 0;
+    return {
+      id: row.id,
+      name: row.name,
+      description: row.description,
+      cost: row.cost,
+      participant_limit: row.participant_limit,
+      start_datetime: row.start_datetime,
+      created_at: row.created_at,
+      available_spots: Math.max(0, row.participant_limit - enrollCount),
+      worker: {
+        id: row.worker?.id ?? 0,
+        first_name: row.worker?.first_name ?? "",
+        last_name: row.worker?.last_name ?? "",
+        email: row.worker?.email ?? "",
+      },
+      tags: (row.activity_tags ?? []).map((t: any) => t.tag),
+    } satisfies ActivityDTO;
+  });
+
+  return {
+    activities,
+    pagination: { page, limit, total: count ?? activities.length },
+  } satisfies ActivitiesListResponseDTO;
 }
 
 export async function createActivity(
@@ -245,3 +303,5 @@ export async function deleteActivity(supabase: SupabaseClient, id: number): Prom
     notifications_sent,
   } satisfies AdminActivityDeleteResponseDTO;
 }
+
+// (No bottom import — previous erroneous self-import removed)
