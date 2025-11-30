@@ -22,14 +22,13 @@ KidsEnroll ma na celu rozwiązanie tych problemów poprzez automatyzację i cyfr
 
 ## 3. Wymagania funkcjonalne
 ### 3.1. Panel Administratora
-- Zarządzanie kontami rodziców: Przeglądanie listy zarejestrowanych rodziców oraz możliwość ręcznego usuwania ich kont wraz ze wszystkimi powiązanymi danymi.
+- Zarządzanie kontami rodziców: Przeglądanie listy zarejestrowanych rodziców.
 - Zarządzanie opiekunami: Dodawanie i zarządzanie listą opiekunów (imię, nazwisko, e-mail kontaktowy).
 - Zarządzanie zajęciami:
     - Dodawanie nowych zajęć (nazwa, opis, predefiniowane tagi, termin, koszt, limit miejsc).
     - Przypisywanie opiekunów do zajęć.
-    - Edycja istniejących zajęć (dzień/godzina, opiekun, koszt).
     - Usuwanie zajęć.
-- Powiadomienia: Edycja lub usunięcie zajęć powoduje wysłanie mockowanego (symulowanego) powiadomienia e-mail do rodziców dzieci zapisanych na te zajęcia.
+- Powiadomienia: Usunięcie zajęć powoduje wysłanie mockowanego (symulowanego) powiadomienia e-mail do rodziców dzieci zapisanych na te zajęcia.
 ### 3.2. Panel Rodzica
 - Uwierzytelnianie: Możliwość samodzielnej rejestracji i logowania do systemu. Konto administratora jest predefiniowane i niedostępne do publicznej rejestracji.
 - Onboarding: Nowo zarejestrowany rodzic musi dodać co najmniej jedno dziecko, aby uzyskać dostęp do pełnej funkcjonalności aplikacji.
@@ -177,7 +176,7 @@ Następujące funkcjonalności celowo NIE wchodzą w zakres wersji MVP i mogą z
 
 ---
 - ID: US-012
-- Tytuł: Zarządzanie kontami rodziców
+- Tytuł: Sprawdzanie informacji o kontach rodziców
 - Opis: Jako administrator, chcę mieć wgląd w listę zarejestrowanych rodziców.
 - Kryteria akceptacji:
     1.  W panelu administratora znajduje się sekcja "Rodzice" z listą wszystkich zarejestrowanych kont.

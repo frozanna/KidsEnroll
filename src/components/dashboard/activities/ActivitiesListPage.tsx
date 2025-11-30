@@ -26,7 +26,8 @@ export const ActivitiesListPage: React.FC = () => {
 
   const onConfirmEnroll = useCallback(() => {
     closeEnrollDialog();
-  }, [closeEnrollDialog]);
+    retry();
+  }, [closeEnrollDialog, retry]);
 
   return (
     <section role="main" className="space-y-4">
