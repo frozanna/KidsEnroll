@@ -111,11 +111,6 @@ const ActivityRow: React.FC<ActivityRowProps> = memo(({ activity, onDeleteClick 
       </td>
       <td className="px-4 py-2" data-label="Akcje">
         <div className="flex gap-2">
-          <Button size="sm" variant="outline" asChild>
-            <a href={`/app/admin/activities/${activity.id}/edit`} aria-label="Edytuj zajęcia">
-              Edytuj
-            </a>
-          </Button>
           <Button size="sm" variant="destructive" onClick={() => onDeleteClick(activity.id)} aria-label="Usuń zajęcia">
             Usuń
           </Button>

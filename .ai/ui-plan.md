@@ -95,37 +95,31 @@ KidsEnroll (MVP) zapewnia dwa główne konteksty aplikacyjne oparte o role: Pane
 - **Kluczowe informacje**: Formularz: nazwa, opis, koszt, limit, data/godzina (UTC konwersja), wybór opiekuna, tagi
 - **Kluczowe komponenty**: SSR fetch workers + tags; Form, Input, Textarea, NumberInput, DateTimePicker, Select (workers), MultiSelect/ComboBox (tags), Alert, Button, Toast
 - **Uwagi UX / A11y / Security**: Walidacja przyszłej daty; maks. liczby znaków; tagi pobierane z backendowego endpointu GET `/admin/tags`.
-16. **Edycja zajęć**
-- **Ścieżka**: `/admin/activities/:id/edit`
-- **Cel**: Aktualizacja istniejącej aktywności
-- **Kluczowe informacje**: Prefill danych + formularz jak w (15)
-- **Kluczowe komponenty**: SSR fetch activity + workers + tags; Form itd.
-- **Uwagi UX / A11y / Security**: -
-17. **Lista opiekunów**
+16. **Lista opiekunów**
 - **Ścieżka**: `/admin/workers`
 - **Cel**: Przegląd opiekunów
 - **Kluczowe informacje**: Tabela: imię, nazwisko, email; brak paginacji
 - **Kluczowe komponenty**: DataTable (client load once), Button (Dodaj, Usuń), Toast
 - **Uwagi UX / A11y / Security**: Spójne kolumny; brak paginacji; powiadomienie o niemożliwości usunięcia opiekuna.
-18. **Dodawanie opiekuna**
+17. **Dodawanie opiekuna**
 - **Ścieżka**: `/admin/workers/new`
 - **Cel**: Utworzenie nowego opiekuna
 - **Kluczowe informacje**: Formularz: imię, nazwisko, email
 - **Kluczowe komponenty**: Form, Input, Alert, Button, Toast
 - **Uwagi UX / A11y / Security**: Walidacja unikalności email po stronie API; po sukcesie redirect do listy.
-19. **Edycja opiekuna**
+18. **Edycja opiekuna**
 - **Ścieżka**: `/admin/workers/:id/edit`
 - **Cel**: Aktualizacja danych opiekuna
 - **Kluczowe informacje**: Prefill danych + formularz
 - **Kluczowe komponenty**: SSR fetch worker; Form, Input, Alert, Button, Toast
 - **Uwagi UX / A11y / Security**: -
-20. **Lista rodziców**
+19. **Lista rodziców**
 - **Ścieżka**: `/admin/parents`
 - **Cel**: Przegląd kont rodziców
 - **Kluczowe informacje**: Tabela z paginacją/ wyszukiwaniem (email, imię, nazwisko), akcja Usuń
 - **Kluczowe komponenty**: DataTable (server pagination+search), AlertDialog (potwierdzenie), Toast
 - **Uwagi UX / A11y / Security**: Potwierdzenie skutków kaskadowych (tekst w dialogu); brak edycji.
-21. **Szczegóły rodzica**
+20. **Szczegóły rodzica**
 - **Ścieżka**: `/admin/parents/:id`
 - **Cel**: Wgląd w dane rodzica i jego dzieci
 - **Kluczowe informacje**: Dane profilu, lista dzieci (z podstawowymi parametrami)

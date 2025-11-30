@@ -168,22 +168,19 @@ Następujące funkcjonalności celowo NIE wchodzą w zakres wersji MVP i mogą z
 
 ---
 - ID: US-011
-- Tytuł: Edycja i usuwanie zajęć
-- Opis: Jako administrator, chcę móc edytować szczegóły istniejących zajęć oraz je usuwać, aby oferta była zawsze aktualna.
+- Tytuł: Usuwanie zajęć
+- Opis: Jako administrator, chcę móc usuwać zajęcia w razie nieprzewidzianych okoliczności.
 - Kryteria akceptacji:
-    1.  Na liście zajęć w panelu administratora przy każdej pozycji znajdują się opcje "Edytuj" i "Usuń".
-    2.  Opcja "Edytuj" pozwala na zmianę dnia/godziny, opiekuna i kosztu zajęć.
-    3.  Opcja "Usuń" powoduje usunięcie zajęć z systemu po uprzednim potwierdzeniu.
-    4.  Każda z tych akcji (edycja lub usunięcie) generuje mockowane powiadomienie e-mail do rodziców dzieci zapisanych na te zajęcia.
+    1.  Na liście zajęć w panelu administratora przy każdej pozycji znajdują się "Usuń".
+    2.  Opcja "Usuń" powoduje usunięcie zajęć z systemu po uprzednim potwierdzeniu.
+    3.  Usunięcie generuje mockowane powiadomienie e-mail do rodziców dzieci zapisanych na te zajęcia.
 
 ---
 - ID: US-012
 - Tytuł: Zarządzanie kontami rodziców
-- Opis: Jako administrator, chcę mieć wgląd w listę zarejestrowanych rodziców i możliwość usunięcia ich konta w razie potrzeby.
+- Opis: Jako administrator, chcę mieć wgląd w listę zarejestrowanych rodziców.
 - Kryteria akceptacji:
     1.  W panelu administratora znajduje się sekcja "Rodzice" z listą wszystkich zarejestrowanych kont.
-    2.  Przy każdym koncie rodzica widoczny jest przycisk "Usuń".
-    3.  Po kliknięciu "Usuń" i potwierdzeniu operacji, konto rodzica oraz wszystkie powiązane z nim dane (w tym profile dzieci i zapisy na zajęcia) są trwale usuwane z systemu.
 
 ## 6. Metryki sukcesu
 Sukces wdrożenia wersji MVP będzie mierzony na podstawie danych zbieranych w ciągu pierwszego miesiąca od uruchomienia aplikacji. Celem jest walidacja, czy produkt rozwiązuje realne problemy użytkowników i czy jest przez nich adoptowany.

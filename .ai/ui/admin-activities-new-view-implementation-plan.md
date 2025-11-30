@@ -135,5 +135,4 @@ Widok służy administratorowi do tworzenia nowych zajęć dodatkowych. Umożliw
 5. Walidacja: zaimplementuj funkcję `validate(values)` zgodną z sekcją 9. Dodaj konwersję daty lokalnej do ISO UTC przy submit.
 6. API: wywołaj `POST /api/admin/activities` z payloadem zgodnym z `AdminActivityCreateCommand`. Obsłuż błędy (`mapApiErrorToFormErrors`).
 7. UX: dodaj `aria-live` dla stanu zapisu; po sukcesie redirect do `/admin/activities` oraz toast sukcesu.
-8. Testy manualne: wprowadź poprawne i błędne dane (np. przeszła data, brak opiekuna). Sprawdź błędy i redirect.
 9. Stylowanie: zastosuj Tailwind (spójnie z `ChildForm`), responsywność i dostępność.
