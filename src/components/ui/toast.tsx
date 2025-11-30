@@ -8,7 +8,7 @@ interface InternalToast extends ToastHandle {
 }
 
 const baseStyle =
-  "pointer-events-auto w-[320px] rounded-md border shadow-sm px-4 py-3 mb-3 bg-white text-sm dark:bg-neutral-900 dark:border-neutral-800 flex gap-3 items-start animate-fade-in";
+  "pointer-events-auto w-[320px] rounded-md border shadow-sm px-4 py-3 mb-3 bg-sidebar text-sm dark:bg-neutral-900 dark:border-neutral-800 flex gap-3 items-start animate-fade-in";
 
 function variantClasses(variant: ToastVariant | undefined) {
   switch (variant) {

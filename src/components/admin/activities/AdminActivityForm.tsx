@@ -289,7 +289,7 @@ const AdminActivityCreateForm: React.FC<AdminActivityCreateFormProps> = ({
         <select
           id="worker_id"
           name="worker_id"
-          className="w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-neutral-400"
+          className="w-full rounded-md border border-neutral-300 bg-sidebar px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-neutral-400"
           value={values.worker_id}
           onChange={(e) => dispatch({ type: "SET_FIELD", field: "worker_id", value: e.target.value })}
           aria-invalid={!!errors.worker_id}
@@ -318,7 +318,7 @@ const AdminActivityCreateForm: React.FC<AdminActivityCreateFormProps> = ({
           <input
             id="tags-input"
             type="text"
-            className="w-full rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-neutral-400"
+            className="w-full rounded-md border border-neutral-300 bg-sidebar px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-neutral-400"
             placeholder="np. sport, muzyka, plener"
             value={tagInput}
             onChange={(e) => setTagInput(e.target.value)}
@@ -336,7 +336,7 @@ const AdminActivityCreateForm: React.FC<AdminActivityCreateFormProps> = ({
           />
           <button
             type="button"
-            className="rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm shadow-sm hover:bg-neutral-50"
+            className="rounded-md border border-neutral-300 bg-sidebar px-3 py-2 text-sm shadow-sm hover:bg-neutral-50"
             onClick={() => {
               const t = tagInput.trim();
               if (!t) return;
@@ -352,7 +352,7 @@ const AdminActivityCreateForm: React.FC<AdminActivityCreateFormProps> = ({
           {(values.tags || []).map((t) => (
             <span
               key={t}
-              className="inline-flex items-center gap-2 px-2 py-1 text-xs rounded-md border bg-white text-neutral-900 border-neutral-300"
+              className="inline-flex items-center gap-2 px-2 py-1 text-xs rounded-md border bg-sidebar text-neutral-900 border-neutral-300"
             >
               {t}
               <button
