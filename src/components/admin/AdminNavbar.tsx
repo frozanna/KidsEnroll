@@ -22,13 +22,31 @@ export const AdminNavbar: React.FC<AdminNavbarProps> = ({ activeLabel }) => {
             EnrollKids Admin
           </a>
         </Button>
-        <div className="flex items-center gap-3">
+        <nav className="flex items-center gap-2" aria-label="Nawigacja administracyjna">
+          <Button variant="ghost" className="text-sm font-medium" asChild>
+            <a
+              href="/admin/activities"
+              aria-label="Zarządzaj zajęciami"
+              aria-current={activeLabel === "Zajęcia" ? "page" : undefined}
+            >
+              Zajęcia
+            </a>
+          </Button>
+          <Button variant="ghost" className="text-sm font-medium" asChild>
+            <a
+              href="/admin/workers"
+              aria-label="Zarządzaj opiekunami"
+              aria-current={activeLabel === "Opiekunowie" ? "page" : undefined}
+            >
+              Opiekunowie
+            </a>
+          </Button>
           {activeLabel ? (
-            <p className="text-sm font-medium opacity-90" aria-live="polite">
+            <p className="ml-2 text-xs font-medium opacity-70" aria-live="polite">
               {activeLabel}
             </p>
           ) : null}
-        </div>
+        </nav>
       </div>
     </header>
   );
