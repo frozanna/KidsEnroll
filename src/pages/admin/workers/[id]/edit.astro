@@ -1,0 +1,84 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import AdminNavbar from "@/components/admin/AdminNavbar";
+import WorkerForm from "@/components/admin/workers/AdminWorkerForm";
+import type { APIContext } from "astro";
+
+export async function GET(context: APIContext) {
+  // SSR data fetching for edit mode
+  const { params, url } = context;
+  const idParam = params.id;
+  const idNum = Number(idParam);
+  if (!idParam || Number.isNaN(idNum)) {
+    return new Response("Not Found", { status: 404 });
+  }
+
+  try {
+    const apiUrl = new URL(`/api/admin/workers/${idParam}`, url);
+    const res = await fetch(apiUrl, { headers: { Accept: "application/json" } });
+
+    const contentType = res.headers.get("Content-Type") || "";
+    let data: { id: number; first_name: string; last_name: string; email: string } | null = null;
+    if (res.ok && contentType.includes("application/json")) {
+      data = await res.json();
+    }
+
+    const state = {
+      status: res.status,
+      ok: res.ok,
+      data,
+    };
+
+    return new Response(JSON.stringify(state), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch {
+    return new Response(JSON.stringify({ ok: false, status: 500 }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+}
+
+const response = await GET(Astro);
+const ssr = await response.json();
+const worker = ssr?.data ?? null;
+const errorStatus: number | null = ssr?.ok ? null : (ssr?.status ?? null);
+---
+
+<Layout title="Edytuj opiekuna">
+  <AdminNavbar />
+  <main class="mx-auto max-w-3xl px-4 py-6" aria-labelledby="page-title">
+    <h1 id="page-title" class="text-2xl font-semibold tracking-tight">Edytuj opiekuna</h1>
+
+    {
+      errorStatus === 401 || errorStatus === 403 ? (
+        <div role="alert" class="mt-4 rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-700">
+          Brak uprawnień do wyświetlenia tej strony.
+        </div>
+      ) : null
+    }
+
+    {
+      errorStatus === 404 ? (
+        <div role="alert" class="mt-4 rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-700">
+          Nie znaleziono opiekuna.
+        </div>
+      ) : null
+    }
+
+    {
+      !errorStatus && worker ? (
+        <div class="mt-6">
+          <WorkerForm
+            client:load
+            mode="edit"
+            workerId={worker.id}
+            initialData={{ first_name: worker.first_name, last_name: worker.last_name, email: worker.email }}
+          />
+        </div>
+      ) : null
+    }
+  </main>
+</Layout>

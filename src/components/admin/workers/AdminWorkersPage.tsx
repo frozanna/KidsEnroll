@@ -1,9 +1,10 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useAdminWorkers } from "@/components/hooks/adminDashboard/useAdminWorkers";
-import { WorkersToolbar } from "./WorkersToolbar";
+import { WorkersToolbar } from "./AdminWorkersToolbar";
 import { WorkersDataTable } from "./AdminWorkersTable";
 import { LoadingSkeleton } from "@/components/ui/LoadingSkeleton";
 import { Button } from "@/components/ui/button";
+import { DeleteWorkerDialog } from "./DeleteWorkerDialog";
 
 const EmptyState: React.FC<{ message?: string }> = ({ message }) => (
   <div className="flex flex-col items-center justify-center py-10 text-center">
@@ -14,14 +15,46 @@ const EmptyState: React.FC<{ message?: string }> = ({ message }) => (
 export const AdminWorkersPage: React.FC = () => {
   const { state, deleteWorker, fetchWorkers } = useAdminWorkers();
 
-  const onDelete = useCallback(
-    async (id: number) => {
-      const ok = window.confirm("Czy na pewno chcesz usunąć tego opiekuna?");
-      if (!ok) return;
-      await deleteWorker(id);
-    },
-    [deleteWorker]
-  );
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [selectedWorkerId, setSelectedWorkerId] = useState<number | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | undefined>(undefined);
+
+  const onDelete = useCallback((id: number) => {
+    setSelectedWorkerId(id);
+    setDeleteError(undefined);
+    setDeleteDialogOpen(true);
+  }, []);
+
+  const closeDeleteDialog = useCallback(() => {
+    setDeleteDialogOpen(false);
+    setSelectedWorkerId(null);
+    setSubmitting(false);
+    setDeleteError(undefined);
+  }, []);
+
+  const confirmDelete = useCallback(async () => {
+    if (selectedWorkerId == null) return;
+    try {
+      setSubmitting(true);
+      setDeleteError(undefined);
+      await deleteWorker(selectedWorkerId);
+      setDeleteDialogOpen(false);
+      setSelectedWorkerId(null);
+    } catch (e: unknown) {
+      const message = e && typeof e === "object" && "message" in e ? (e as { message?: string }).message : undefined;
+      setDeleteError(message || "Nie udało się usunąć opiekuna.");
+    } finally {
+      setSubmitting(false);
+    }
+  }, [deleteWorker, selectedWorkerId]);
+
+  const deleteWorkerName = useMemo(() => {
+    if (selectedWorkerId == null) return undefined;
+    const w = state.workers.find((w) => w.id === selectedWorkerId);
+    if (!w) return undefined;
+    return `${w.firstName} ${w.lastName}`.trim();
+  }, [selectedWorkerId, state.workers]);
 
   return (
     <section role="main" className="space-y-4">
@@ -46,6 +79,14 @@ export const AdminWorkersPage: React.FC = () => {
           <WorkersDataTable rows={state.workers} onDelete={onDelete} />
         )}
       </div>
+      <DeleteWorkerDialog
+        open={deleteDialogOpen}
+        workerName={deleteWorkerName}
+        onCancel={closeDeleteDialog}
+        onConfirm={confirmDelete}
+        submitting={submitting}
+        error={deleteError}
+      />
     </section>
   );
 };

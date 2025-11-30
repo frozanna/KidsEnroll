@@ -13,7 +13,7 @@ export const WorkersToolbar: React.FC<WorkersToolbarProps> = ({ count }) => {
           Dodaj opiekuna
         </a>
       </Button>
-      <div className="flex items-center gap-2 text-sm text-muted-foreground" aria-live="polite">
+      <div className="flex items-center gap-2 text-sm" aria-live="polite">
         <span>Opiekunowie</span>
         <span aria-label="Liczba opiekunów" className="rounded bg-muted px-2 py-0.5 text-[11px] font-medium">
           {count ?? 0}

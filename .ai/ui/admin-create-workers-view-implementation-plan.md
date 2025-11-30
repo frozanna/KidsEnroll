@@ -132,5 +132,4 @@ Oba widoki dostępne wyłącznie dla roli Admin (egzekwowane przez middleware). 
 6. Mapowanie błędów: z `409` → błąd `email`; `400` → rozbić na pola; inne → `_global`.
 7. UI i A11y: nagłówki, `main` landmark, `aria-live` oraz focus na pierwsze błędne pole.
 8. Toast/Redirect: po sukcesie `toast.success` (jeśli używany hook) i `window.location.href = "/admin/workers"`.
-9. Testy manualne: scenariusze sukcesu, 409, 404, 403/401.
 10. Refaktor opcjonalny: wyekstrahować wspólne utilsy (np. email regex) jeśli już istnieją w projekcie.

@@ -36,3 +36,13 @@ export function formatUtcToLocal(
 export function joinFullName(first?: string | null, last?: string | null): string {
   return `${first ?? ""} ${last ?? ""}`.trim();
 }
+
+// Standard email regex used across forms (practical RFC5322 subset).
+const EMAIL_REGEX =
+  /^(?:[a-zA-Z0-9_'^&-]+(?:\.[a-zA-Z0-9_'^&-]+)*|"(?:[^"]|\\")+")@(?:(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}|\[(?:IPv6:)?[a-fA-F0-9:.]+\])$/;
+
+export function isValidEmail(email: string): boolean {
+  const trimmed = (email ?? "").trim();
+  if (!trimmed || trimmed.length > 255) return false;
+  return EMAIL_REGEX.test(trimmed);
+}
