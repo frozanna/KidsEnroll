@@ -1,0 +1,19 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import AdminNavbar from "@/components/admin/AdminNavbar";
+import ParentDetailPage from "@/components/admin/parents/ParentDetailPage";
+import Toaster from "@/components/ui/toaster-wrapper";
+export const prerender = false;
+
+const { params } = Astro;
+const id = params.id as string;
+---
+
+<Layout title="Admin • Rodzice">
+  <AdminNavbar client:load activeLabel="Rodzice" />
+  <main class="mx-auto max-w-6xl p-4">
+    <h1 class="mb-4 text-xl font-semibold flex justify-center">Szczegóły rodzica</h1>
+    <ParentDetailPage client:load parentId={id} />
+  </main>
+  <Toaster client:load />
+</Layout>

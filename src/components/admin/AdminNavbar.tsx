@@ -82,6 +82,15 @@ export const AdminNavbar: React.FC<AdminNavbarProps> = ({ activeLabel }) => {
               Opiekunowie
             </a>
           </Button>
+          <Button variant="ghost" className="text-sm font-medium" asChild>
+            <a
+              href="/admin/parents"
+              aria-label="Zarządzaj rodzicami"
+              aria-current={activeLabel === "Rodzice" ? "page" : undefined}
+            >
+              Rodzice
+            </a>
+          </Button>
           {activeLabel ? (
             <p className="ml-2 text-xs font-medium opacity-70" aria-live="polite">
               {activeLabel}

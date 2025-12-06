@@ -15,13 +15,7 @@
 //  - Validation of inputs handled in validation layer; service expects normalized params.
 //
 import type { SupabaseClient } from "../../db/supabase.client";
-import type {
-  ParentListItemDTO,
-  ParentsListResponseDTO,
-  ParentDetailDTO,
-  ParentDetailChildDTO,
-  ParentDeleteResponseDTO,
-} from "../../types";
+import type { ParentListItemDTO, ParentsListResponseDTO, ParentDetailDTO, ParentDetailChildDTO } from "../../types";
 import { createError } from "./errors";
 import { buildRange, buildPagination } from "../pagination.utils";
 import type { ListParentsQuery } from "../validation/admin.parents.schema";
@@ -72,6 +66,14 @@ export async function listParents(supabase: SupabaseClient, query: ListParentsQu
 
   const parentIds = rawProfiles.map((p) => p.id);
 
+  // Fetch emails from auth.users via secure RPC
+  const { data: emailRows, error: emailError } = await supabase.rpc("get_auth_emails", { user_ids: parentIds });
+  if (emailError) throw createError("INTERNAL_ERROR", emailError.message);
+  const emailMap = new Map<string, string>();
+  for (const r of (emailRows as unknown as { user_id: string; email: string | null }[]) ?? []) {
+    emailMap.set(r.user_id, r.email ?? "");
+  }
+
   // Children counts (GROUP BY parent_id) for listed parents
   const { data: childRows, error: childrenError } = await supabase
     .from("children")
@@ -89,7 +91,7 @@ export async function listParents(supabase: SupabaseClient, query: ListParentsQu
     first_name: p.first_name ?? "",
     last_name: p.last_name ?? "",
     created_at: p.created_at,
-    email: "", // placeholder per assumption
+    email: emailMap.get(p.id) ?? "",
     children_count: childrenCountMap.get(p.id) || 0,
   }));
 
@@ -108,6 +110,15 @@ export async function getParentById(supabase: SupabaseClient, parentId: string):
     throw createError("PARENT_NOT_FOUND", "Parent not found");
   }
 
+  // Fetch email for this parent via secure RPC (auth.users)
+  let email = "";
+  {
+    const { data: emailRows, error: emailError } = await supabase.rpc("get_auth_emails", { user_ids: [parentId] });
+    if (emailError) throw createError("INTERNAL_ERROR", emailError.message);
+    const row = (emailRows as unknown as { user_id: string; email: string | null }[] | null)?.[0];
+    email = row?.email ?? "";
+  }
+
   // Children rows for this parent
   const { data: childRows, error: childrenError } = await supabase
     .from("children")
@@ -122,7 +133,7 @@ export async function getParentById(supabase: SupabaseClient, parentId: string):
       first_name: profile.first_name ?? "",
       last_name: profile.last_name ?? "",
       created_at: profile.created_at,
-      email: "", // placeholder
+      email,
       children: [],
     } satisfies ParentDetailDTO;
   }
@@ -154,76 +165,11 @@ export async function getParentById(supabase: SupabaseClient, parentId: string):
     first_name: profile.first_name ?? "",
     last_name: profile.last_name ?? "",
     created_at: profile.created_at,
-    email: "", // placeholder
+    email,
     children,
   } satisfies ParentDetailDTO;
 }
 
 function emptyParentsResponse(page: number, limit: number, total: number): ParentsListResponseDTO {
   return { parents: [], pagination: { page, limit, total } };
-}
-
-// ---- deleteParent ----
-// Deletes a parent profile and cascades related children & enrollments via DB foreign key ON DELETE CASCADE.
-// Returns counts of children and enrollments that were associated prior to deletion.
-// Error scenarios:
-//  - Parent not found or role != 'parent' -> PARENT_NOT_FOUND
-//  - Attempt to delete admin -> VALIDATION_ERROR
-//  - Database errors -> INTERNAL_ERROR
-export async function deleteParent(supabase: SupabaseClient, parentId: string): Promise<ParentDeleteResponseDTO> {
-  // Fetch profile first to validate role & existence.
-  const { data: profile, error: profileError } = await supabase
-    .from("profiles")
-    .select("id, role")
-    .eq("id", parentId)
-    .maybeSingle();
-  if (profileError) throw createError("INTERNAL_ERROR", profileError.message);
-  if (!profile) throw createError("PARENT_NOT_FOUND", "Parent not found");
-  if (profile.role === "admin") {
-    // Business rule: cannot delete admin accounts.
-    throw createError("VALIDATION_ERROR", "Cannot delete admin account");
-  }
-  if (profile.role !== "parent") {
-    // Only parents are deletable in this endpoint scope.
-    throw createError("PARENT_NOT_FOUND", "Parent not found");
-  }
-
-  // Count children belonging to this parent.
-  const { data: childRows, error: childrenError } = await supabase
-    .from("children")
-    .select("id")
-    .eq("parent_id", parentId);
-  if (childrenError) throw createError("INTERNAL_ERROR", childrenError.message);
-  const childIds: number[] = (childRows ?? []).map((c) => c.id);
-  const deleted_children = childIds.length;
-
-  // Count enrollments for those children (will cascade when children deleted via profile deletion).
-  let deleted_enrollments = 0;
-  if (childIds.length > 0) {
-    const { data: enrollmentRows, error: enrollError } = await supabase
-      .from("enrollments")
-      .select("child_id")
-      .in("child_id", childIds);
-    if (enrollError) throw createError("INTERNAL_ERROR", enrollError.message);
-    deleted_enrollments = (enrollmentRows ?? []).length;
-  }
-
-  // Perform deletion of profile (children & enrollments cascade).
-  // Use .select() to ensure we affected a row (Supabase returns deleted rows when select specified).
-  const { data: deletedProfileRows, error: deleteError } = await supabase
-    .from("profiles")
-    .delete()
-    .eq("id", parentId)
-    .select("id");
-  if (deleteError) throw createError("INTERNAL_ERROR", deleteError.message);
-  if (!deletedProfileRows || deletedProfileRows.length === 0) {
-    // Unexpected: row disappeared between validation & delete (race condition) -> treat as not found.
-    throw createError("PARENT_NOT_FOUND", "Parent not found");
-  }
-
-  return {
-    message: "Parent account and all associated data deleted successfully",
-    deleted_children,
-    deleted_enrollments,
-  } satisfies ParentDeleteResponseDTO;
 }

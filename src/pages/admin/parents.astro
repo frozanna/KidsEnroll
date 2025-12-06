@@ -1,0 +1,16 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import AdminNavbar from "@/components/admin/AdminNavbar";
+import AdminParentsPage from "@/components/admin/parents/AdminParentsPage";
+import Toaster from "@/components/ui/toaster-wrapper";
+export const prerender = false;
+---
+
+<Layout title="Admin • Rodzice">
+  <AdminNavbar client:load activeLabel="Rodzice" />
+  <main class="mx-auto max-w-6xl p-4">
+    <h1 class="mb-4 text-xl font-semibold flex justify-center">Lista rodziców</h1>
+    <AdminParentsPage client:load />
+  </main>
+  <Toaster client:load />
+</Layout>

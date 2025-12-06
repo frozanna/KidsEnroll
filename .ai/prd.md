@@ -70,6 +70,8 @@ Następujące funkcjonalności celowo NIE wchodzą w zakres wersji MVP i mogą z
     4.  System waliduje siłę hasła (np. minimum 8 znaków).
     5.  Po pomyślnej rejestracji jestem automatycznie zalogowany i przekierowany do ekranu onboardingu (dodawania dziecka).
     6.  Nie mogę zarejestrować się na e-mail, który już istnieje w systemie.
+    7.  Użytkownik może się wylogować z systemu poprzez przycisk w prawym górnym rogu w Navbara
+    8.  Nie korzystamy z zewnętrznych serwisów logowania (np. Google, GitHub).
 
 ---
 - ID: US-002
@@ -79,8 +81,11 @@ Następujące funkcjonalności celowo NIE wchodzą w zakres wersji MVP i mogą z
     1.  Strona logowania zawiera pola na e-mail i hasło.
     2.  Po podaniu poprawnych danych logowania i kliknięciu "Zaloguj", zostaję przekierowany do swojego panelu (rodzica lub administratora).
     3.  W przypadku podania błędnych danych, wyświetlany jest czytelny komunikat o błędzie.
-    4.  System rozróżnia konta rodziców i predefiniowane konto administratora.
+    4.  System rozróżnia konta rodziców i predefiniowane konto administratora i przekierowuje je na odpowiednie strony po zalogowaniu - panel administratora (activities) lub panel rodzica (dashboard).
+    5.  Odzyskiwanie hasła powinno być możliwe.
+    6.  Użytkownik NIE MOŻE korzystać z żadnych funkcji bez logowania się do systemu.
 
+### Panel Rodzica
 ---
 - ID: US-003
 - Tytuł: Onboarding nowego rodzica
@@ -91,7 +96,6 @@ Następujące funkcjonalności celowo NIE wchodzą w zakres wersji MVP i mogą z
     3.  Formularz dodawania dziecka wymaga podania imienia, nazwiska, daty urodzenia i opcjonalnie opisu zainteresowań.
     4.  Po pomyślnym dodaniu dziecka jestem przekierowany do głównego panelu rodzica.
 
-### Panel Rodzica
 ---
 - ID: US-004
 - Tytuł: Zarządzanie profilami dzieci

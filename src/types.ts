@@ -244,12 +244,6 @@ export interface ParentDetailDTO
   children: ParentDetailChildDTO[];
 }
 
-export interface ParentDeleteResponseDTO {
-  message: string;
-  deleted_children: number;
-  deleted_enrollments: number;
-}
-
 // --- Tags (Admin) ---
 export interface TagsListResponseDTO {
   tags: string[]; // Predefined closed list
