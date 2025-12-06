@@ -1,8 +1,7 @@
 ---
-import Welcome from "../components/Welcome.astro";
-import Layout from "../layouts/Layout.astro";
+export const prerender = false;
+// Simple server-side redirect to activities list per implementation plan
+return Astro.redirect("/auth/login");
 ---
 
-<Layout>
-  <Welcome />
-</Layout>
+<!-- Redirecting to /auth/login -->

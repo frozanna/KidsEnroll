@@ -172,11 +172,11 @@ Dokument opisuje architekturę funkcjonalności zgodnie z PRD (US-001, US-002) i
 - `profile.service.ts` lub `parents.service.ts` do rozróżnienia ról (admin vs parent).
 
 ## 5. Przypadki brzegowe i zachowanie
-- Duplikacja emaila: zwrócić błąd walidacji z serwera, UI inline error.
+- Duplikacja emaila: zwrócić błąd walidacji z serwera, UI pokazuje inline error.
 - Błędne hasło: komunikat ogólny bez ujawniania, że email istnieje.
 - Zablokowany dostęp do tras: middleware przekierowuje do loginu.
 - Zalogowany użytkownik na stronach auth: przekierowanie do właściwego panelu.
-- Reset hasła dla nieistniejącego emaila: UI zawsze zwraca informację o  swysłaniu instrukcji (nie potwierdzać istnienia konta).
+- Reset hasła dla nieistniejącego emaila: UI zawsze zwraca informację o wysłaniu instrukcji (nie potwierdzać istnienia konta).
 
 ## 6. Zgodność z istniejącą aplikacją
 - Nie naruszamy istniejących paneli rodzica (`ParentDashboardPage.tsx`) i admina; dodajemy guardy.

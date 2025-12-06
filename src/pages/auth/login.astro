@@ -1,0 +1,12 @@
+---
+export const prerender = false;
+import Layout from "@/layouts/Layout.astro";
+import LoginForm from "@/components/auth/LoginForm";
+---
+
+<Layout>
+  <section class="max-w-md mx-auto py-8">
+    <h1 class="text-2xl font-semibold mb-4">Zaloguj się</h1>
+    <LoginForm />
+  </section>
+</Layout>
