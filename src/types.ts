@@ -44,6 +44,15 @@ export interface AuthLoginCommand {
   password: string;
 }
 
+export type UserRole = "admin" | "parent";
+
+export interface AuthResponse {
+  ok?: boolean;
+  role?: UserRole;
+  redirectTo?: string;
+  message?: string;
+}
+
 export interface AuthTokenDTO {
   access_token: string;
   refresh_token: string;

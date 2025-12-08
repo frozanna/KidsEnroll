@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 
 const schema = z.object({
   email: z.string().email({ message: "Nieprawidłowy email" }),
-  password: z.string().min(8, { message: "Hasło min. 8 znaków" }),
+  password: z.string(),
 });
 
 interface State {
@@ -47,9 +47,8 @@ export const LoginForm: React.FC<{ onSuccessRedirect?: string }> = ({ onSuccessR
         body: JSON.stringify(parsed.data),
       });
       if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        const message = (data && data.message) || "Logowanie nieudane";
-        setState((s) => ({ ...s, submitting: false, errors: { _global: [message] } }));
+        // Zgodnie z polityką: zawsze ogólny komunikat
+        setState((s) => ({ ...s, submitting: false, errors: { _global: ["Nieprawidłowe dane logowania"] } }));
         return;
       }
       const data = (await res.json().catch(() => ({}))) as { redirectTo?: string };
@@ -94,8 +93,8 @@ export const LoginForm: React.FC<{ onSuccessRedirect?: string }> = ({ onSuccessR
               <a href="/auth/reset">Nie pamiętasz hasła?</a>
             </Button>
           </div>
-          <Button type="button" variant="secondary" onClick={() => (window.location.href = "/auth/register")}>
-            Nie masz konta? Zarejestruj się
+          <Button type="button" variant="secondary" asChild>
+            <a href="/auth/register">Nie masz konta? Zarejestruj się</a>
           </Button>
           <SubmitButton label="Zaloguj" loading={submitting} disabled={submitting} />
         </form>
