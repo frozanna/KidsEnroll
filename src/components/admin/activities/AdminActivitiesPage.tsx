@@ -5,8 +5,8 @@ import { PaginationControls } from "@/components/dashboard/activities/Pagination
 import { DeleteActivityDialog } from "./DeleteActivityDialog";
 import { LoadingSkeleton } from "@/components/ui/LoadingSkeleton";
 import { EmptyState } from "@/components/dashboard/activities/EmptyState";
-import { useAdminActivitiesList } from "../../hooks/adminDashboard/useAdminActivitiesList";
-import { Button } from "../../ui/button";
+import { useAdminActivitiesList } from "@/components/hooks/adminDashboard/useAdminActivitiesList";
+import { Button } from "@/components/ui/button";
 
 export const AdminActivitiesPage: React.FC = () => {
   const { state, setSearch, goToPage, openDeleteDialog, closeDeleteDialog, confirmDelete, retry } =

@@ -48,7 +48,7 @@ beforeEach(() => {
 
 // Stub UI children to isolate ParentDashboardPage wiring
 // Note: Vitest hoists vi.mock calls, so module IDs must be string literals.
-vi.mock("src/components/dashboard/actions/ActionsBar.tsx", () => ({
+vi.mock("@/components/dashboard/actions/ActionsBar.tsx", () => ({
   ActionsBar: ({
     onAddChild,
     onGenerateReport,
@@ -69,7 +69,7 @@ vi.mock("src/components/dashboard/actions/ActionsBar.tsx", () => ({
   ),
 }));
 
-vi.mock("src/components/dashboard/ChildrenAccordion.tsx", () => ({
+vi.mock("@/components/dashboard/ChildrenAccordion.tsx", () => ({
   ChildrenAccordion: ({
     onExpand,
     onWithdraw,
@@ -84,7 +84,7 @@ vi.mock("src/components/dashboard/ChildrenAccordion.tsx", () => ({
   ),
 }));
 
-vi.mock("src/components/dashboard/EmptyChildrenState.tsx", () => ({
+vi.mock("@/components/dashboard/EmptyChildrenState.tsx", () => ({
   EmptyChildrenState: ({ onAddChild }: { onAddChild: () => void }) => (
     <div data-testid="empty-children">
       <button onClick={onAddChild}>add-child</button>
@@ -92,15 +92,15 @@ vi.mock("src/components/dashboard/EmptyChildrenState.tsx", () => ({
   ),
 }));
 
-vi.mock("src/components/dashboard/LoadingSpinner.tsx", () => ({
+vi.mock("@/components/dashboard/LoadingSpinner.tsx", () => ({
   LoadingSpinner: ({ message }: { message: string }) => <div>{message}</div>,
 }));
 
-vi.mock("src/components/ui/useToastFeedback.ts", () => ({
+vi.mock("@/components/ui/useToastFeedback.ts", () => ({
   useToastFeedback: () => ({ error: mockToastError }),
 }));
 
-vi.mock("src/components/hooks/parentDashboard/useParentDashboard.ts", () => ({
+vi.mock("@/components/hooks/parentDashboard/useParentDashboard.ts", () => ({
   useParentDashboard: () => ({
     state: currentState,
     toggleChildExpansion: mockToggle,
@@ -113,7 +113,7 @@ vi.mock("src/components/hooks/parentDashboard/useParentDashboard.ts", () => ({
 }));
 
 // Import component under test AFTER mocks
-import ParentDashboardPage from "src/components/dashboard/ParentDashboardPage";
+import ParentDashboardPage from "@/components/dashboard/ParentDashboardPage";
 
 describe("ParentDashboardPage", () => {
   it("renders LoadingSpinner when loading children", () => {
