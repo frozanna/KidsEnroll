@@ -18,6 +18,8 @@ This digital solution replaces inefficient manual methods, providing a centraliz
 - **Shadcn/ui**: Offers a collection of accessible React UI components.
 - **Supabase**: Serves as the backend for authentication and database management.
 - **Openrouter.ai**: Integrates with various AI models for extended functionalities.
+ - **Vitest + Testing Library**: Provide a lightweight unit/integration testing setup for React components and utilities.
+ - **Playwright**: Powers end-to-end tests in Chromium/Desktop Chrome.
 
 ## Getting Started Locally
 
@@ -57,6 +59,10 @@ The following npm scripts are available:
 - **npm run lint**: Runs ESLint to analyze code quality.
 - **npm run lint:fix**: Automatically fixes linting issues.
 - **npm run format**: Formats the codebase with Prettier.
+ - **npm run test** / **npm run test:unit**: Runs the unit test suite with Vitest.
+ - **npm run test:watch**: Runs unit tests in watch mode during development.
+ - **npm run test:e2e**: Runs Playwright end-to-end tests in headless mode.
+ - **npm run test:e2e:ui**: Opens the Playwright UI to explore and run E2E tests.
 
 ## Project Scope
 
