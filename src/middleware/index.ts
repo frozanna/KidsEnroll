@@ -1,7 +1,15 @@
 import { defineMiddleware } from "astro:middleware";
 import { createSupabaseServerInstance } from "@/db/supabase.client";
 
-const PUBLIC_PATHS = ["/", "/auth/login", "/api/auth/login", "/auth/reset", "/auth/register"];
+const PUBLIC_PATHS = [
+  "/",
+  "/auth/login",
+  "/api/auth/login",
+  "/auth/reset",
+  "/api/auth/reset",
+  "/auth/register",
+  "/api/auth/register",
+];
 
 export const onRequest = defineMiddleware(async ({ locals, cookies, url, request, redirect }, next) => {
   // Landing page remains public but should redirect to login

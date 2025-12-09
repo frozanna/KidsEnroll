@@ -4,6 +4,7 @@ import { TextField } from "@/components/form/TextField";
 import { SubmitButton } from "@/components/form/SubmitButton";
 import { ValidationErrors } from "@/components/form/ValidationErrors";
 import { Button } from "@/components/ui/button";
+import { useToastFeedback } from "@/components/ui/useToastFeedback";
 
 const schema = z.object({
   email: z.string().email({ message: "Nieprawidłowy email" }),
@@ -22,6 +23,7 @@ export const LoginForm: React.FC<{ onSuccessRedirect?: string }> = ({ onSuccessR
     errors: {},
     submitting: false,
   });
+  const { success } = useToastFeedback();
 
   function setField<K extends keyof State["values"]>(field: K, value: string) {
     setState((s) => ({ ...s, values: { ...s.values, [field]: value }, errors: { ...s.errors, [field]: undefined } }));
@@ -52,6 +54,7 @@ export const LoginForm: React.FC<{ onSuccessRedirect?: string }> = ({ onSuccessR
         return;
       }
       const data = (await res.json().catch(() => ({}))) as { redirectTo?: string };
+      success("Zalogowano pomyślnie", "Miło Cię znowu widzieć");
       window.location.href = data.redirectTo || onSuccessRedirect;
     } catch (err) {
       const message = err instanceof Error ? err.message : "Problem z połączeniem";

@@ -1,6 +1,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { LogoutButton } from "@/components/auth/LogoutButton";
 
 interface AdminNavbarProps {
   activeLabel?: string;
@@ -91,11 +92,7 @@ export const AdminNavbar: React.FC<AdminNavbarProps> = ({ activeLabel }) => {
               Rodzice
             </a>
           </Button>
-          {activeLabel ? (
-            <p className="ml-2 text-xs font-medium opacity-70" aria-live="polite">
-              {activeLabel}
-            </p>
-          ) : null}
+          <LogoutButton redirectTo="/auth/login" />
         </nav>
       </div>
     </header>

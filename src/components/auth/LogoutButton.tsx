@@ -8,19 +8,18 @@ export const LogoutButton: React.FC<{ redirectTo?: string; className?: string }>
   const [loading, setLoading] = React.useState(false);
 
   async function onClick() {
+    setLoading(true);
     try {
-      setLoading(true);
       await fetch("/api/auth/logout", { method: "POST" });
-    } catch {
-      // ignore error in MVP
     } finally {
+      // Niezależnie od wyniku próbujemy przenieść użytkownika na ekran logowania
       setLoading(false);
       window.location.href = redirectTo;
     }
   }
 
   return (
-    <Button variant="outline" onClick={onClick} className={className} disabled={loading}>
+    <Button variant="destructive" onClick={onClick} className={className} disabled={loading}>
       Wyloguj
     </Button>
   );

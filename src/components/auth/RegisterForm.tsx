@@ -4,6 +4,7 @@ import { TextField } from "@/components/form/TextField";
 import { SubmitButton } from "@/components/form/SubmitButton";
 import { ValidationErrors } from "@/components/form/ValidationErrors";
 import { Button } from "@/components/ui/button";
+import { useToastFeedback } from "@/components/ui/useToastFeedback";
 
 const schema = z
   .object({
@@ -33,6 +34,7 @@ export const RegisterForm: React.FC<{ onSuccessRedirect?: string }> = ({
     errors: {},
     submitting: false,
   });
+  const { success } = useToastFeedback();
 
   function setField<K extends keyof State["values"]>(field: K, value: string) {
     setState((s) => ({ ...s, values: { ...s.values, [field]: value }, errors: { ...s.errors, [field]: undefined } }));
@@ -55,7 +57,11 @@ export const RegisterForm: React.FC<{ onSuccessRedirect?: string }> = ({
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: parsed.data.email, password: parsed.data.password }),
+        body: JSON.stringify({
+          email: parsed.data.email,
+          password: parsed.data.password,
+          confirmPassword: parsed.data.confirmPassword,
+        }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -64,6 +70,7 @@ export const RegisterForm: React.FC<{ onSuccessRedirect?: string }> = ({
         return;
       }
       const data = (await res.json().catch(() => ({}))) as { redirectTo?: string };
+      success("Konto utworzone", "Sprawdź skrzynkę, aby potwierdzić adres email");
       window.location.href = data.redirectTo || onSuccessRedirect;
     } catch (err) {
       const message = err instanceof Error ? err.message : "Problem z połączeniem";

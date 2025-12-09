@@ -1,6 +1,7 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { LogoutButton } from "@/components/auth/LogoutButton";
 
 interface ParentNavbarProps {
   activeTabLabel?: string;
@@ -80,6 +81,7 @@ export const ParentNavbar: React.FC<ParentNavbarProps> = ({ activeTabLabel }) =>
               </span>
             </a>
           </Button>
+          <LogoutButton className="h-8 px-3 text-xs font-medium" redirectTo="/auth/login" />
         </div>
       </div>
     </header>
