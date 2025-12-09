@@ -10,7 +10,11 @@ interface AdminActivitiesTableProps {
 
 export const AdminActivitiesTable: React.FC<AdminActivitiesTableProps> = ({ activities, onDeleteClick }) => {
   return (
-    <div className="w-full overflow-hidden rounded-lg border" aria-label="Tabela zajęć (admin)">
+    <div
+      className="w-full overflow-hidden rounded-lg border"
+      aria-label="Tabela zajęć (admin)"
+      data-testid="admin-activities-table"
+    >
       <div className="overflow-x-auto">
         <table className="w-full border-collapse" aria-label="Lista zajęć (admin)">
           <caption className="sr-only">Lista zajęć administracyjnych</caption>
@@ -101,8 +105,8 @@ const ActivityRow: React.FC<ActivityRowProps> = memo(({ activity, onDeleteClick 
       </td>
       <td className="px-4 py-2 text-xs" data-label="Tagi">
         <div className="flex flex-wrap gap-1.5" aria-label="Tagi">
-          {activity.tags.length === 0 && <span className="text-muted-foreground">—</span>}
-          {activity.tags.map((t) => (
+          {(activity.tags ?? []).length === 0 && <span className="text-muted-foreground">—</span>}
+          {(activity.tags ?? []).map((t) => (
             <span key={t} className="rounded bg-muted px-2 py-0.5 text-[11px] font-medium">
               {t}
             </span>

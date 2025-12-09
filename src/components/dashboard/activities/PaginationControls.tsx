@@ -17,7 +17,11 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({ page, li
   const goLast = useCallback(() => onPageChange(totalPages), [onPageChange, totalPages]);
 
   return (
-    <nav aria-label="Paginacja" className="flex items-center justify-between px-4 py-3">
+    <nav
+      aria-label="Paginacja"
+      className="flex items-center justify-between px-4 py-3"
+      data-testid="pagination-controls"
+    >
       <div className="flex w-full items-center gap-8 lg:w-fit">
         <div className="flex w-fit items-center justify-center text-sm font-medium">
           Strona {page} z {totalPages}
