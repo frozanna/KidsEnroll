@@ -9,7 +9,6 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     const parsed = registerSchema.safeParse(body);
 
     if (!parsed.success) {
-      console.log(body);
       return new Response(JSON.stringify({ message: "Nieprawidłowe dane rejestracji" }), { status: 400 });
     }
 

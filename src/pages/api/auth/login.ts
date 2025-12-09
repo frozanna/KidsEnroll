@@ -8,7 +8,6 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     const body = await request.json();
     const parsed = loginSchema.safeParse(body);
     if (!parsed.success) {
-      console.log("Invalid login data:", body);
       return new Response(JSON.stringify({ message: "Nieprawidłowe dane logowania" }), { status: 400 });
     }
 
