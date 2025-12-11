@@ -14,6 +14,9 @@ export async function loginAsParent(page: Page) {
   await page.getByTestId("auth-login-password").fill(password);
   await page.getByTestId("auth-login-submit").click();
 
+  const currentURL = page.url();
+  console.log(`You are currently on: ${currentURL}`);
+
   await page.waitForURL("**/app/dashboard");
 }
 
@@ -30,6 +33,9 @@ export async function loginAsAdmin(page: Page): Promise<void> {
   await page.getByTestId("auth-login-email").fill(username);
   await page.getByTestId("auth-login-password").fill(password);
   await page.getByTestId("auth-login-submit").click();
+
+  const currentURL = page.url();
+  console.log(`You are currently on: ${currentURL}`);
 
   await page.waitForURL("/admin/activities");
 }
