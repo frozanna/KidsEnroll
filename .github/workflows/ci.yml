@@ -51,6 +51,12 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_TEST_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_TEST_KEY }}
+          E2E_ADMIN_USERNAME_ID: ${{ secrets.E2E_ADMIN_USERNAME_ID }}
+          E2E_ADMIN_USERNAME: ${{ secrets.E2E_ADMIN_USERNAME }}
+          E2E_ADMIN_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD }}
+          E2E_USERNAME_ID: ${{ secrets.E2E_USERNAME_ID }}
+          E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
+          E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
 
       - name: Run E2E tests
         run: |
@@ -60,6 +66,12 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          E2E_ADMIN_USERNAME_ID: ${{ secrets.E2E_ADMIN_USERNAME_ID }}
+          E2E_ADMIN_USERNAME: ${{ secrets.E2E_ADMIN_USERNAME }}
+          E2E_ADMIN_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD }}
+          E2E_USERNAME_ID: ${{ secrets.E2E_USERNAME_ID }}
+          E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
+          E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
           PLAYWRIGHT_BASE_URL: http://localhost:3000
 
       - name: Upload Playwright report
