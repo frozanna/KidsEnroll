@@ -99,6 +99,20 @@ jobs:
           E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
           PLAYWRIGHT_BASE_URL: http://127.0.0.1:3000
 
+      - name: Cleanup E2E data in Supabase
+        run: |
+          set -e
+          echo "Triggering RPC reset_e2e_data to clean test records..."
+          curl -s -o /dev/null -w "%{http_code}\n" \
+            -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" \
+            -H "Content-Type: application/json" \
+            -X POST "${SUPABASE_URL}/rest/v1/rpc/reset_e2e_data" \
+            -d '{}'
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4
         if: always()
