@@ -63,14 +63,36 @@ jobs:
           E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
           E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
 
+      - name: Verify Supabase connectivity (secrets presence)
+        run: |
+          echo "Checking SUPABASE_URL and SUPABASE_KEY presence..."
+          if [ -z "${SUPABASE_URL}" ]; then echo "SUPABASE_URL is NOT set"; exit 1; else echo "SUPABASE_URL is set"; fi
+          if [ -z "${SUPABASE_KEY}" ]; then echo "SUPABASE_KEY is NOT set"; exit 1; else echo "SUPABASE_KEY is set"; fi
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+
+      - name: Verify Supabase connectivity (HTTP reachability)
+        run: |
+          set -e
+          echo "Pinging Supabase API endpoints..."
+          CODE_ROOT=$(curl -s -o /dev/null -w "%{http_code}" "${SUPABASE_URL}")
+          echo "Root status: ${CODE_ROOT}"
+          CODE_REST=$(curl -s -o /dev/null -w "%{http_code}" -H "apikey: ${SUPABASE_KEY}" -H "Authorization: Bearer ${SUPABASE_KEY}" "${SUPABASE_URL}/rest/v1/")
+          echo "REST status: ${CODE_REST}"
+          if [ "${CODE_REST}" -ge 400 ]; then echo "Supabase REST not reachable with provided key"; exit 1; fi
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+
       - name: Run E2E tests
         run: |
           npm run preview -- --port 3000 --host 127.0.0.1 &
           npx wait-on http://127.0.0.1:3000
           npm run test:e2e
         env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_TEST_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_TEST_KEY }}
           E2E_ADMIN_USERNAME_ID: ${{ secrets.E2E_ADMIN_USERNAME_ID }}
           E2E_ADMIN_USERNAME: ${{ secrets.E2E_ADMIN_USERNAME }}
           E2E_ADMIN_PASSWORD: ${{ secrets.E2E_ADMIN_PASSWORD }}
