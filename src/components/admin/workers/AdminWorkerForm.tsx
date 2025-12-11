@@ -200,7 +200,12 @@ export default function WorkerForm({ mode, initialData, workerId, onSuccessRedir
   }
 
   return (
-    <form onSubmit={handleSubmit} aria-live="polite" className="space-y-6">
+    <form
+      onSubmit={handleSubmit}
+      aria-live="polite"
+      className="space-y-6"
+      data-testid={mode === "create" ? "admin-worker-create-form" : "admin-worker-edit-form"}
+    >
       {state.errors._global && state.errors._global.length > 0 && <ValidationErrors errors={state.errors._global} />}
 
       <TextField
@@ -211,6 +216,7 @@ export default function WorkerForm({ mode, initialData, workerId, onSuccessRedir
         onChange={(v) => dispatch({ type: "SET_FIELD", field: "first_name", value: v })}
         error={state.errors.first_name}
         required
+        data-testid="admin-worker-first-name-input"
       />
 
       <TextField
@@ -221,6 +227,7 @@ export default function WorkerForm({ mode, initialData, workerId, onSuccessRedir
         onChange={(v) => dispatch({ type: "SET_FIELD", field: "last_name", value: v })}
         error={state.errors.last_name}
         required
+        data-testid="admin-worker-last-name-input"
       />
 
       <TextField
@@ -232,10 +239,15 @@ export default function WorkerForm({ mode, initialData, workerId, onSuccessRedir
         onChange={(v) => dispatch({ type: "SET_FIELD", field: "email", value: v })}
         error={state.errors.email}
         required
+        data-testid="admin-worker-email-input"
       />
 
       <div className="pt-2">
-        <SubmitButton loading={state.submitting} label={mode === "create" ? "Zapisz opiekuna" : "Zapisz zmiany"} />
+        <SubmitButton
+          loading={state.submitting}
+          label={mode === "create" ? "Zapisz opiekuna" : "Zapisz zmiany"}
+          data-testid="admin-worker-submit-button"
+        />
       </div>
     </form>
   );

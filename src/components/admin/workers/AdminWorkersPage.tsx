@@ -57,24 +57,38 @@ export const AdminWorkersPage: React.FC = () => {
   }, [selectedWorkerId, state.workers]);
 
   return (
-    <section role="main" className="space-y-4">
+    <section
+      role="main"
+      className="space-y-4"
+      aria-label="Panel zarządzania opiekunami"
+      data-testid="admin-workers-page"
+    >
       <WorkersToolbar count={state.workers.length} />
-      <div className="rounded-md border p-2">
-        {state.loadState === "loading" && <LoadingSkeleton />}
+      <div className="rounded-md border p-2" data-testid="admin-workers-list-container">
+        {state.loadState === "loading" && <LoadingSkeleton data-testid="admin-workers-loading" />}
         {state.loadState === "error" && (
           <div className="space-y-4">
             <EmptyState message={state.error || "Wystąpił błąd."} />
             <div className="flex justify-center">
-              <Button variant="outline" onClick={() => window.location && window.location.reload()} className="mr-2">
+              <Button
+                variant="outline"
+                onClick={() => window.location && window.location.reload()}
+                className="mr-2"
+                data-testid="admin-workers-refresh-page-button"
+              >
                 Odśwież stronę
               </Button>
-              <Button variant="default" onClick={() => fetchWorkers()}>
+              <Button variant="default" onClick={() => fetchWorkers()} data-testid="admin-workers-retry-button">
                 Spróbuj ponownie
               </Button>
             </div>
           </div>
         )}
-        {state.loadState === "success" && state.workers.length === 0 && <EmptyState />}
+        {state.loadState === "success" && state.workers.length === 0 && (
+          <div data-testid="admin-workers-empty-state">
+            <EmptyState />
+          </div>
+        )}
         {state.loadState === "success" && state.workers.length > 0 && (
           <WorkersDataTable rows={state.workers} onDelete={onDelete} />
         )}

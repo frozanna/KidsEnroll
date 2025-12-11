@@ -64,7 +64,7 @@ export const AdminNavbar: React.FC<AdminNavbarProps> = ({ activeLabel }) => {
             </span>
           </Button>
         </div>
-        <nav className="flex items-center gap-2" aria-label="Nawigacja administracyjna">
+        <nav className="flex items-center gap-2" aria-label="Nawigacja administracyjna" data-testid="admin-navbar">
           <Button variant="ghost" className="text-sm font-medium" asChild>
             <a
               href="/admin/activities"
@@ -79,6 +79,7 @@ export const AdminNavbar: React.FC<AdminNavbarProps> = ({ activeLabel }) => {
               href="/admin/workers"
               aria-label="Zarządzaj opiekunami"
               aria-current={activeLabel === "Opiekunowie" ? "page" : undefined}
+              data-testid="admin-nav-workers-link"
             >
               Opiekunowie
             </a>

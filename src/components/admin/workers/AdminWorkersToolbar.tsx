@@ -7,9 +7,12 @@ interface WorkersToolbarProps {
 
 export const WorkersToolbar: React.FC<WorkersToolbarProps> = ({ count }) => {
   return (
-    <div className="flex items-center justify-between rounded-md border bg-background p-4">
+    <div
+      className="flex items-center justify-between rounded-md border bg-background p-4"
+      data-testid="admin-workers-toolbar"
+    >
       <Button type="button" variant="default" asChild>
-        <a href="/admin/workers/new" aria-label="Dodaj nowego opiekuna">
+        <a href="/admin/workers/new" aria-label="Dodaj nowego opiekuna" data-testid="admin-add-worker-button">
           Dodaj opiekuna
         </a>
       </Button>

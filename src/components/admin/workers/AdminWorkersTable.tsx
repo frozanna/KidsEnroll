@@ -13,7 +13,11 @@ export const WorkersDataTable: React.FC<WorkersDataTableProps> = ({ rows, onDele
   return (
     <div className="w-full overflow-hidden rounded-lg border" aria-label="Tabela opiekunów (admin)">
       <div className="overflow-x-auto">
-        <table className="w-full border-collapse" aria-label="Lista opiekunów (admin)">
+        <table
+          className="w-full border-collapse"
+          aria-label="Lista opiekunów (admin)"
+          data-testid="admin-workers-table"
+        >
           <caption className="sr-only">Lista opiekunów</caption>
           <thead className="sticky top-0 z-10 bg-muted">
             <tr className="text-left align-middle">
@@ -36,7 +40,7 @@ export const WorkersDataTable: React.FC<WorkersDataTableProps> = ({ rows, onDele
           </thead>
           <tbody>
             {rows.length === 0 && (
-              <tr>
+              <tr data-testid="admin-workers-row-empty">
                 <td colSpan={5} className="h-24 px-4 text-center text-sm text-muted-foreground">
                   Brak opiekunów.
                 </td>
@@ -59,7 +63,7 @@ interface WorkerRowProps {
 
 const WorkerRow: React.FC<WorkerRowProps> = memo(({ worker, onDelete }) => {
   return (
-    <tr className="border-t align-top transition-colors hover:bg-muted/40">
+    <tr className="border-t align-top transition-colors hover:bg-muted/40" data-testid="admin-workers-row">
       <td className="px-4 py-2 text-sm" data-label="Imię">
         {worker.firstName}
       </td>
