@@ -33,5 +33,5 @@ export async function loginAsAdmin(page: Page): Promise<void> {
   await page.getByTestId("auth-login-password").fill(password);
   await page.getByTestId("auth-login-submit").click();
 
-  await page.waitForURL("**/admin/activities");
+  await page.waitForURL("/admin/activities");
 }

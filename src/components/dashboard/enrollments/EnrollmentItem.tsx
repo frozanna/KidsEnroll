@@ -13,7 +13,10 @@ const EnrollmentItemComponent: React.FC<EnrollmentItemProps> = ({ enrollment, on
   };
 
   return (
-    <li className="flex items-center justify-between py-2 border-b last:border-none">
+    <li
+      className="flex items-center justify-between py-2 border-b last:border-none"
+      data-testid={`enrollment-item-${enrollment.activityId}`}
+    >
       <div className="flex flex-col">
         <span className="font-medium">{enrollment.activityName}</span>
         <span className="text-xs text-gray-500">

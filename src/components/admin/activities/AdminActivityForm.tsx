@@ -234,6 +234,7 @@ const AdminActivityCreateForm: React.FC<AdminActivityCreateFormProps> = ({
         ref={(el: HTMLInputElement | null) => {
           if (errors.name && el) firstInvalidRef.current = el;
         }}
+        data-testid="activity-name-input"
       />
       <Textarea
         label="Opis (opcjonalnie)"
@@ -241,6 +242,7 @@ const AdminActivityCreateForm: React.FC<AdminActivityCreateFormProps> = ({
         value={values.description}
         error={errors.description}
         onChange={(v: string) => dispatch({ type: "SET_FIELD", field: "description", value: v })}
+        data-testid="activity-description-input"
       />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <NumberInput
@@ -255,6 +257,7 @@ const AdminActivityCreateForm: React.FC<AdminActivityCreateFormProps> = ({
           ref={(el: HTMLInputElement | null) => {
             if (errors.cost && el) firstInvalidRef.current = el;
           }}
+          data-testid="activity-cost-input"
         />
         <NumberInput
           label="Limit miejsc"
@@ -268,6 +271,7 @@ const AdminActivityCreateForm: React.FC<AdminActivityCreateFormProps> = ({
           ref={(el: HTMLInputElement | null) => {
             if (errors.participant_limit && el) firstInvalidRef.current = el;
           }}
+          data-testid="activity-limit-input"
         />
       </div>
       <DateTimePicker
@@ -280,6 +284,7 @@ const AdminActivityCreateForm: React.FC<AdminActivityCreateFormProps> = ({
         ref={(el: HTMLInputElement | null) => {
           if (errors.start_datetime_local && el) firstInvalidRef.current = el;
         }}
+        data-testid="activity-date-input"
       />
 
       <div className="flex flex-col gap-1">
@@ -295,6 +300,7 @@ const AdminActivityCreateForm: React.FC<AdminActivityCreateFormProps> = ({
           aria-invalid={!!errors.worker_id}
           aria-describedby={errors.worker_id ? "worker_id-error" : undefined}
           required
+          data-testid="activity-worker-select"
         >
           <option value="">Wybierz opiekuna...</option>
           {workers.map((w) => (
@@ -333,6 +339,7 @@ const AdminActivityCreateForm: React.FC<AdminActivityCreateFormProps> = ({
               }
             }}
             aria-invalid={!!errors.tags}
+            data-testid="activity-tags-input"
           />
           <button
             type="button"
@@ -344,6 +351,7 @@ const AdminActivityCreateForm: React.FC<AdminActivityCreateFormProps> = ({
               dispatch({ type: "SET_FIELD", field: "tags", value: next });
               setTagInput("");
             }}
+            data-testid="add-tag-button"
           >
             Dodaj
           </button>
@@ -376,7 +384,12 @@ const AdminActivityCreateForm: React.FC<AdminActivityCreateFormProps> = ({
         )}
       </div>
 
-      <SubmitButton loading={submitting} label="Utwórz zajęcia" disabled={disableSubmit} />
+      <SubmitButton
+        loading={submitting}
+        label="Utwórz zajęcia"
+        disabled={disableSubmit}
+        data-testid="submit-activity-button"
+      />
     </form>
   );
 };

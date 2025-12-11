@@ -78,7 +78,7 @@ const ActivityRow: React.FC<ActivityRowProps> = memo(({ activity, onEnrollClick 
   };
 
   return (
-    <tr className="border-t transition-colors hover:bg-muted/40 align-top">
+    <tr className="border-t transition-colors hover:bg-muted/40 align-top" data-testid={`activity-row-${activity.id}`}>
       <td className="px-4 py-2 font-medium" data-label="Nazwa">
         {activity.name}
       </td>
@@ -125,6 +125,7 @@ const ActivityRow: React.FC<ActivityRowProps> = memo(({ activity, onEnrollClick 
           aria-disabled={activity.isFull}
           variant={activity.isFull ? "outline" : "default"}
           title={activity.isFull ? "Brak miejsc" : "Zapisz dziecko"}
+          data-testid={`enroll-button-${activity.id}`}
         >
           {activity.isFull ? "Brak miejsc" : "Zapisz"}
         </Button>

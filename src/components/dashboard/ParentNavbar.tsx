@@ -46,7 +46,7 @@ export const ParentNavbar: React.FC<ParentNavbarProps> = ({ activeTabLabel }) =>
             className="px-0 text-base font-semibold text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
             asChild
           >
-            <a href="/app/dashboard" aria-label="Przejdź do panelu rodzica">
+            <a href="/app/dashboard" aria-label="Przejdź do panelu rodzica" data-testid="nav-home-link">
               EnrollKids
             </a>
           </Button>

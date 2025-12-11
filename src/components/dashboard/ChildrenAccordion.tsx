@@ -40,6 +40,7 @@ export const ChildrenAccordion: React.FC<ChildrenAccordionProps> = ({
                 aria-controls={contentId}
                 onClick={() => onExpand(child.id)}
                 className="flex-1 text-left focus:outline-none focus-visible:ring"
+                data-testid={`child-accordion-trigger-${child.id}`}
               >
                 <span className="font-medium">
                   {child.fullName} <span className="text-xs text-gray-500">({child.age})</span>

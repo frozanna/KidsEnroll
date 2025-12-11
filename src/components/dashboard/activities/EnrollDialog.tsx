@@ -181,6 +181,7 @@ export const EnrollDialog: React.FC<EnrollDialogProps> = ({ open, activity, chil
         aria-describedby="enroll-dialog-desc"
         aria-busy={state.isSubmitting || undefined}
         className="w-full max-w-md rounded-md bg-background p-6 shadow-lg focus:outline-none"
+        data-testid="enroll-dialog"
       >
         <h2 id="enroll-dialog-title" className="mb-4 text-lg font-semibold">
           Zapis na zajęcia
@@ -231,6 +232,7 @@ export const EnrollDialog: React.FC<EnrollDialogProps> = ({ open, activity, chil
                   disabled={state.isSubmitting}
                   checked={state.selectedChildId === c.id}
                   onChange={() => setSelectedChildId(c.id)}
+                  data-testid={`child-radio-${c.id}`}
                 />
                 <span>
                   {c.first_name} {c.last_name}
@@ -247,6 +249,7 @@ export const EnrollDialog: React.FC<EnrollDialogProps> = ({ open, activity, chil
             onClick={handleSubmit}
             disabled={!state.selectedChildId || state.isSubmitting}
             aria-disabled={!state.selectedChildId || state.isSubmitting}
+            data-testid="enroll-submit-button"
           >
             {state.isSubmitting ? "Zapisywanie..." : "Zapisz"}
           </Button>

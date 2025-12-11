@@ -75,7 +75,7 @@ interface ActivityRowProps {
 const ActivityRow: React.FC<ActivityRowProps> = memo(({ activity, onDeleteClick }) => {
   return (
     <tr className="border-t align-top transition-colors hover:bg-muted/40">
-      <td className="px-4 py-2 font-medium" data-label="Nazwa">
+      <td className="px-4 py-2 font-medium" data-label="Nazwa" data-testid="activity-name">
         {activity.name}
       </td>
       <td className="px-4 py-2 max-w-[260px] text-xs text-muted-foreground" data-label="Opis">

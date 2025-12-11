@@ -44,7 +44,7 @@ export const AdminActivitiesToolbar: React.FC<AdminActivitiesToolbarProps> = ({ 
           Resetuj
         </Button>
         <Button type="button" variant="default" asChild>
-          <a href="/admin/activities/new" aria-label="Dodaj nowe zajęcia">
+          <a href="/admin/activities/new" aria-label="Dodaj nowe zajęcia" data-testid="add-activity-button">
             Dodaj zajęcia
           </a>
         </Button>

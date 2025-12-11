@@ -28,7 +28,11 @@ if (!supabase) {
     // "Failed to parse URL" in the server environment. Use Astro.url (current request URL) as base.
     // We purposely build via URL API to ensure correct origin also in dev / behind proxy.
     const apiUrl = new URL(`/api/children/${encodeURIComponent(id)}`, Astro.url);
-    const res = await fetch(apiUrl.toString());
+    const res = await fetch(apiUrl.toString(), {
+      headers: {
+        cookie: Astro.request.headers.get("cookie") || "",
+      },
+    });
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
       const code = data?.error?.code;
