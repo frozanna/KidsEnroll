@@ -76,8 +76,6 @@ jobs:
         run: |
           set -e
           echo "Pinging Supabase API endpoints..."
-          CODE_ROOT=$(curl -s -o /dev/null -w "%{http_code}" "${SUPABASE_URL}")
-          echo "Root status: ${CODE_ROOT}"
           CODE_REST=$(curl -s -o /dev/null -w "%{http_code}" -H "apikey: ${SUPABASE_KEY}" -H "Authorization: Bearer ${SUPABASE_KEY}" "${SUPABASE_URL}/rest/v1/")
           echo "REST status: ${CODE_REST}"
           if [ "${CODE_REST}" -ge 400 ]; then echo "Supabase REST not reachable with provided key"; exit 1; fi
@@ -126,6 +124,26 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Verify Supabase connectivity (secrets presence)
+        run: |
+          echo "Checking SUPABASE_URL and SUPABASE_KEY presence..."
+          if [ -z "${SUPABASE_URL}" ]; then echo "SUPABASE_URL is NOT set"; exit 1; else echo "SUPABASE_URL is set"; fi
+          if [ -z "${SUPABASE_KEY}" ]; then echo "SUPABASE_KEY is NOT set"; exit 1; else echo "SUPABASE_KEY is set"; fi
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+
+      - name: Verify Supabase connectivity (HTTP reachability)
+        run: |
+          set -e
+          echo "Pinging Supabase API endpoints..."
+          CODE_REST=$(curl -s -o /dev/null -w "%{http_code}" -H "apikey: ${SUPABASE_KEY}" -H "Authorization: Bearer ${SUPABASE_KEY}" "${SUPABASE_URL}/rest/v1/")
+          echo "REST status: ${CODE_REST}"
+          if [ "${CODE_REST}" -ge 400 ]; then echo "Supabase REST not reachable with provided key"; exit 1; fi
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
 
       - name: Build
         run: npm run build
