@@ -154,7 +154,12 @@ export const ChildForm: React.FC<ChildFormProps> = ({
   const age = deriveAgeYears(state.values.birth_date);
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
+    <form
+      onSubmit={handleSubmit}
+      className="flex flex-col gap-4"
+      noValidate
+      data-testid={mode === "create" ? "child-form-create" : "child-form-edit"}
+    >
       {errors._global && <ValidationErrors errors={errors._global} />}
       {submitting && (
         <p className="text-xs text-neutral-500" aria-live="polite">
@@ -164,6 +169,7 @@ export const ChildForm: React.FC<ChildFormProps> = ({
       <TextField
         label="Imię"
         name="first_name"
+        data-testid="child-form-first-name"
         value={values.first_name}
         required
         error={errors.first_name}
@@ -175,6 +181,7 @@ export const ChildForm: React.FC<ChildFormProps> = ({
       <TextField
         label="Nazwisko"
         name="last_name"
+        data-testid="child-form-last-name"
         value={values.last_name}
         required
         error={errors.last_name}
@@ -187,6 +194,7 @@ export const ChildForm: React.FC<ChildFormProps> = ({
         <DatePicker
           label="Data urodzenia"
           name="birth_date"
+          data-testid="child-form-birth-date"
           value={values.birth_date}
           required
           error={errors.birth_date}
@@ -201,6 +209,7 @@ export const ChildForm: React.FC<ChildFormProps> = ({
       <Textarea
         label="Opis (opcjonalnie)"
         name="description"
+        data-testid="child-form-description"
         value={values.description ?? ""}
         error={errors.description}
         onChange={(v: string) => dispatch({ type: "SET_FIELD", field: "description", value: v })}
@@ -208,6 +217,7 @@ export const ChildForm: React.FC<ChildFormProps> = ({
       <SubmitButton
         loading={submitting}
         label={mode === "create" ? "Zapisz dziecko" : "Zapisz zmiany"}
+        data-testid="child-form-submit-button"
         disabled={disableSubmit}
       />
     </form>

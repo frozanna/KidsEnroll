@@ -78,6 +78,7 @@ export const LoginForm: React.FC<{ onSuccessRedirect?: string }> = ({ onSuccessR
             name="email"
             type="email"
             required
+            data-testid="auth-login-email"
             value={values.email}
             error={errors.email as string | undefined}
             onChange={(v) => setField("email", v)}
@@ -87,6 +88,7 @@ export const LoginForm: React.FC<{ onSuccessRedirect?: string }> = ({ onSuccessR
             name="password"
             type="password"
             required
+            data-testid="auth-login-password"
             value={values.password}
             error={errors.password as string | undefined}
             onChange={(v) => setField("password", v)}
@@ -99,7 +101,7 @@ export const LoginForm: React.FC<{ onSuccessRedirect?: string }> = ({ onSuccessR
           <Button type="button" variant="secondary" asChild>
             <a href="/auth/register">Nie masz konta? Zarejestruj się</a>
           </Button>
-          <SubmitButton label="Zaloguj" loading={submitting} disabled={submitting} />
+          <SubmitButton label="Zaloguj" loading={submitting} disabled={submitting} data-testid="auth-login-submit" />
         </form>
       </div>
     </section>

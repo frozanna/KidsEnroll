@@ -14,7 +14,8 @@
     "test:unit": "vitest --run --reporter=dot",
     "test:watch": "vitest --watch",
     "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui"
+    "test:e2e:ui": "playwright test --ui",
+    "dev:e2e": "astro dev --mode test"
   },
   "dependencies": {
     "@astrojs/node": "^9.4.3",
@@ -48,6 +49,7 @@
     "@types/jest": "^29.5.14",
     "@typescript-eslint/eslint-plugin": "8.28.0",
     "@typescript-eslint/parser": "8.28.0",
+    "dotenv-cli": "^11.0.0",
     "eslint": "9.23.0",
     "eslint-config-prettier": "10.1.1",
     "eslint-import-resolver-typescript": "4.2.5",

@@ -15,6 +15,7 @@ export const EmptyChildrenState: React.FC<EmptyChildrenStateProps> = ({ onAddChi
         type="button"
         onClick={onAddChild}
         className="px-5 py-2 rounded-md bg-blue-600 text-white text-sm font-medium hover:bg-blue-500 focus:outline-none focus-visible:ring"
+        data-testid="empty-children-add-child-button"
       >
         Dodaj dziecko
       </button>

@@ -1,5 +1,6 @@
 // REST API Endpoint: Update Activity (PATCH /api/admin/activities/:id)
 // REST API Endpoint: Delete Activity (DELETE /api/admin/activities/:id)
+// REST API Endpoint: Get Activity Details (GET /api/admin/activities/:id)
 // Responsibilities:
 //  - Authenticate admin
 //  - Validate path param id & body (zod) ensuring at least one field
@@ -23,9 +24,84 @@ import {
   validateUpdateAdminActivityBody,
 } from "../../../../lib/validation/admin.activities.schema";
 import { updateActivity, deleteActivity } from "../../../../lib/services/admin.activities.service";
+import { getActivityById } from "../../../../lib/services/activities.service";
 import type { AdminActivityUpdateResponseDTO, AdminActivityDeleteResponseDTO } from "../../../../types";
 
 export const prerender = false;
+
+export const GET: APIRoute = async (context) => {
+  const supabase = context.locals.supabase as SupabaseClient;
+
+  // --- Validate path param ---
+  let activityId: number;
+  try {
+    activityId = validateAdminActivityIdParam(context.params.id ?? "");
+  } catch (err: unknown) {
+    if (err && typeof err === "object" && "issues" in err) {
+      const apiErr = fromZodError(err as import("zod").ZodError);
+      return jsonResponse(errorToDto(apiErr), apiErr.status);
+    }
+    const apiErr = normalizeUnknownError(err);
+    return jsonResponse(errorToDto(apiErr), apiErr.status);
+  }
+
+  // --- Authenticate admin ---
+  let profile: { id: string; role: string };
+  try {
+    profile = await authenticateAdmin(supabase);
+  } catch (err: unknown) {
+    const apiErr = normalizeUnknownError(err);
+    return jsonResponse(errorToDto(apiErr), apiErr.status);
+  }
+
+  // --- Logging: start ---
+  // eslint-disable-next-line no-console
+  console.log(
+    JSON.stringify({
+      action: "GET_ACTIVITY_ADMIN",
+      phase: "start",
+      admin_id: profile.id,
+      activity_id: activityId,
+      timestamp: new Date().toISOString(),
+    })
+  );
+
+  // --- Business logic delegation ---
+  try {
+    const dto = await getActivityById(supabase, activityId);
+
+    // --- Logging: success ---
+    // eslint-disable-next-line no-console
+    console.log(
+      JSON.stringify({
+        action: "GET_ACTIVITY_ADMIN",
+        phase: "success",
+        admin_id: profile.id,
+        activity_id: dto.id,
+        tags_count: dto.tags.length,
+        timestamp: new Date().toISOString(),
+      })
+    );
+    return jsonResponse(dto, 200);
+  } catch (err: unknown) {
+    const apiErr = normalizeUnknownError(err);
+    // --- Logging: error ---
+    // eslint-disable-next-line no-console
+    console.log(
+      JSON.stringify({
+        action: "GET_ACTIVITY_ADMIN",
+        phase: "error",
+        admin_id: profile.id,
+        activity_id: activityId,
+        error_code: apiErr.code,
+        error_details: apiErr.message,
+        status: apiErr.status,
+        timestamp: new Date().toISOString(),
+      })
+    );
+    return jsonResponse(errorToDto(apiErr), apiErr.status);
+  }
+};
 
 export const PATCH: APIRoute = async (context) => {
   const supabase = context.locals.supabase as SupabaseClient;
