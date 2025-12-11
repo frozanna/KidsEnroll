@@ -14,8 +14,6 @@ export async function loginAsParent(page: Page) {
   await page.getByTestId("auth-login-password").fill(password);
   await page.getByTestId("auth-login-submit").click();
 
-  console.log("Logging in as parent:", password);
-
   await page.waitForURL("**/app/dashboard");
 }
 

@@ -16,7 +16,9 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     const { data, error } = await supabase.auth.signInWithPassword(parsed.data);
 
     // Blokujemy sesje do czasu weryfikacji: jeśli user niepotwierdzony, traktujemy jak błąd logowania
-    if (error || !data.session || !data.user || !data.user.email_confirmed_at) {
+    // W trybie deweloperskim pozwalamy na logowanie bez potwierdzenia maila
+    const isDev = import.meta.env.DEV;
+    if (error || !data.session || !data.user || (!data.user.email_confirmed_at && !isDev)) {
       return new Response(JSON.stringify({ message: "Nieprawidłowe dane logowania" }), { status: 401 });
     }
 
@@ -24,7 +26,9 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     const { data: profile } = await supabase.from("profiles").select("role").eq("id", data.user.id).single();
 
     const role = profile?.role === "admin" ? "admin" : "parent";
-    const redirectTo = role === "admin" ? "/admin" : "/app";
+    // Return final destinations to avoid chained redirects that can
+    // cause Playwright waitForURL timeouts in e2e.
+    const redirectTo = role === "admin" ? "/admin/activities" : "/app/dashboard";
 
     return new Response(JSON.stringify({ redirectTo }), { status: 200 });
   } catch {
