@@ -19,7 +19,7 @@ try {
 
 <Layout title="Dodaj zajęcia">
   <div class="min-h-[60vh]">
-    <AdminNavbar />
+    <AdminNavbar client:load />
     <main class="container mx-auto px-4 py-6">
       <h1 class="text-2xl font-semibold mb-4 flex justify-center">Dodaj zajęcia</h1>
       <AdminActivityCreateForm client:load workers={workers} />
